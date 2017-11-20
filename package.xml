@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>me495_baxter_jar</name>
+  <version>0.0.0</version>
+  <description>The me495_baxter_jar package</description>
+
+  <maintainer email="ahalaya@todo.todo">wspies</maintainer>
+  <maintainer email="mike@todo.todo">wspies</maintainer>
+  <maintainer email="ola@todo.todo">wspies</maintainer>
+  <maintainer email="ruby@todo.todo">wspies</maintainer>
+  <maintainer email="william@todo.todo">wspies</maintainer>
+
+  <license>TODO</license>
+
+  <url type="website">https://github.com/am2512/baxter_final_project</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <export></export>
+</package>
