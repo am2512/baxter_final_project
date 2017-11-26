@@ -3,6 +3,7 @@
 import rospy
 from std_msgs.msg import String
 from geometry_msgs.msg import Vector3
+from baxter_core_msgs.msg import EndpointState
 import serial
 import time
 
@@ -28,8 +29,8 @@ def callback(ball_pos):
     ser.port = '/dev/ttyACM0' #+ sys.argv[1]
     ser.open()
 
-    rospy.Subscriber('/robot/limb/left/endpoint_state',robot_pose,queue_size=1)
-    print
+    robot_poserospy.Subscriber('/robot/limb/left/endpoint_state',EndpointState.pose.position,queue_size=1)
+    print robot_pose.pose.position
 
 
     if ball_x < 300:

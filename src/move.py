@@ -14,7 +14,7 @@ from baxter_core_msgs.srv import (
     SolvePositionIKRequest,
 )
 
-def ik_test(limb):
+def ik_control(limb):
     #rospy.init_node("rsdk_ik_service_client")
     ns = "ExternalTools/" + limb + "/PositionKinematicsNode/IKService"
     iksvc = rospy.ServiceProxy(ns, SolvePositionIK)
@@ -83,7 +83,7 @@ def ik_test(limb):
 def main():
     rospy.init_node("rsdk_ik_service_client")
     #hdr = Header(stamp=rospy.Time.now(), frame_id='base')
-    ik_test('left')
+    ik_control('left')
 
 if __name__ == '__main__':
     main()
