@@ -12,6 +12,22 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 QSIZE=100
 
+import rospy
+import baxter_interface
+from geometry_msgs.msg import (
+    PoseStamped,
+    Pose,
+    Point,
+    Quaternion,
+)
+from std_msgs.msg import Header
+ 
+from baxter_core_msgs.srv import (
+    SolvePositionIK,
+    SolvePositionIKRequest,
+)
+
+from move1 import * 
 
 class image_converter:
     def __init__(self):
@@ -46,6 +62,12 @@ class image_converter:
                     cv2.circle(cv_image, center, 5, (0, 255, 0), -1)
                     a = int(center[0])
                     b = int(center[1])
+                    # print(a)
+                    # print(b)
+                    if a<300: 
+                        ik_control('left')
+
+                    
 
         except CvBridgeError as e:
             print(e)
@@ -65,6 +87,10 @@ class image_converter:
         except CvBridgeError as e:
             print(e)
 
+        
+
+
+
 def main(args):
     image_converter()
     rospy.init_node('image_converter', anonymous=True)
@@ -76,4 +102,4 @@ def main(args):
     cv2.destroyAllWindows()
 
 if __name__ == '__main__':
-main(sys.argv)
+    main(sys.argv)
