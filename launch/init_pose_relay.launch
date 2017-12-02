@@ -1,9 +1,0 @@
-<launch>
-
-    <arg name="art_namespace" default="/ar_trackers" />
-
-    <node name="pose_relay" pkg="me495_baxter_jar" type="relay_tag_pose.py" respawn="true">
-        <remap from="ar_pose_marker"  to="$(arg art_namespace)/ar_pose_marker" />
-    </node>
-
-</launch>
