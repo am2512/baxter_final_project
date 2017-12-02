@@ -3,7 +3,11 @@
 
 import rospy
 
+<<<<<<< HEAD
 from ar_track_alvar_msgs.msg import (
+=======
+from ar_track_alvar.msg import (
+>>>>>>> bcdcaa69dae802fb174dc64af841b146f614c4aa
     AlvarMarkers,
     AlvarMarker
 )
@@ -25,7 +29,11 @@ class poseHandler():
     def __init__(self):
 
         # Publishers and Subscribers
+<<<<<<< HEAD
         #self.capture_pose = rospy.Subscriber("update_pose", Bool, self.cbCapturePoseAndUpdate)
+=======
+        self.capture_pose = rospy.Subscriber("update_pose", Bool, self.cbCapturePoseAndUpdate)
+>>>>>>> bcdcaa69dae802fb174dc64af841b146f614c4aa
         self.pose_sub = rospy.Subscriber("ar_pose_marker", AlvarMarkers, self.cbRegisterObjPose)
 
         self.last_pose = rospy.Publisher("object_pose", PoseStamped, queue_size=10)
@@ -57,7 +65,10 @@ class poseHandler():
         self.last_obj_pose = data.markers[0]
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> bcdcaa69dae802fb174dc64af841b146f614c4aa
 def main():
 
     rospy.init_node("pose_relay")
