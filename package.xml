@@ -15,6 +15,15 @@
   <url type="website">https://github.com/am2512/baxter_final_project</url>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>baxter_interface</depend>
+  <depend>ar_track_alvar</depend>
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
+  <build_export_depend>message_runtime</build_export_depend>
 
   <export></export>
 </package>
