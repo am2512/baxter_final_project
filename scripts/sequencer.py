@@ -2,7 +2,9 @@
 
 
 import rospy
+
 import _init_baxter
+import move2
 
 from std_srvs.srv import Trigger
 
@@ -67,7 +69,15 @@ def main():
         ##   of target object(s)
         # update_obj_pose()
 
-        rospy.spin()
+        rospy.loginfo("Shiny dice, spinning, spinning...")
+
+        # Update the published position of the lid
+        update_obj_pose()
+
+
+
+
+        break
 
     return
 

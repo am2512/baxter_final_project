@@ -6,6 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /Camera1
+        - /Marker1
         - /TF1
       Splitter Ratio: 0.5
     Tree Height: 775
@@ -68,7 +69,7 @@ Visualization Manager:
       Zoom Factor: 1
     - Class: rviz/Marker
       Enabled: true
-      Marker Topic: /ar_trackers/visualization_marker
+      Marker Topic: /z_ar_trackers/visualization_marker
       Name: Marker
       Namespaces:
         basic_shapes: true
@@ -383,23 +384,7 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        ar_marker_0:
-          Value: true
-        ar_marker_1:
-          Value: true
-        ar_marker_2:
-          Value: true
-        ar_marker_3:
-          Value: true
-        ar_marker_4:
-          Value: true
         ar_marker_5:
-          Value: true
-        ar_marker_6:
-          Value: true
-        ar_marker_7:
-          Value: true
-        ar_marker_8:
           Value: true
         base:
           Value: true
@@ -694,23 +679,7 @@ Visualization Manager:
                                 left_hand_accelerometer:
                                   {}
                                 left_hand_camera:
-                                  ar_marker_0:
-                                    {}
-                                  ar_marker_1:
-                                    {}
-                                  ar_marker_2:
-                                    {}
-                                  ar_marker_3:
-                                    {}
-                                  ar_marker_4:
-                                    {}
                                   ar_marker_5:
-                                    {}
-                                  ar_marker_6:
-                                    {}
-                                  ar_marker_7:
-                                    {}
-                                  ar_marker_8:
                                     {}
                                 left_hand_camera_axis:
                                   {}

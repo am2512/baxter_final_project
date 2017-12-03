@@ -2,6 +2,7 @@
 
 
 import rospy
+import numpy as np
 
 from ar_track_alvar_msgs.msg import (AlvarMarkers, AlvarMarker)
 from geometry_msgs.msg import (Point, Pose, PoseStamped, Quaternion)
@@ -18,37 +19,39 @@ class poseHandler():
         self.update_rate = rospy.Rate(5)
 
         # Publishers and Subscribers
-        self.pose_sub = rospy.Subscriber('ar_pose_marker', AlvarMarkers, self.cbRegisterObjPose)
-        self.obj_pose = rospy.Publisher('object_pose', Pose, queue_size=1)
+        self.pose_sub = rospy.Subscriber('/z_ar_trackers/ar_pose_marker', AlvarMarkers, self.cbRegisterObjPose)
+        self.obj_pose = rospy.Publisher('/z_controls/object_pose', Pose, queue_size=1)
         # self.obj_ID = rospy.Publisher('object_ID', UInt32, queue_size=1)  REMOVED FOR NOW
 
         # Services
-        self.update_obj_pose = rospy.Service('update_obj_pose', Trigger, self.cbUpdatePublishedPose)
+        self.update_obj_pose = rospy.Service('update_obj_pose', Trigger, self.srvUpdatePublishedPose)
 
         # Variables for latest subscribed poses and actively published poses
-        self.last_obj_id = UInt32[]
-        self.last_obj_pose = Pose[]
-
-        self.pub_obj_id = UInt32[]
-        self.pub_obj_pose = Pose[]
+        self.last_obj_pose = []
+        self.pub_obj_pose = []
 
 
     def cbRegisterObjPose(self, data):
 
-        for index in range(len(data.markers)):
-            # self.last_obj_id[index] = data.markers[index].id  REMOVED FOR NOW
-            self.last_obj_pose[index] = data.markers[index].pose.pose
+        if (data.markers == []):
+            pass
+        else:
+            self.last_obj_pose = data.markers
 
         return
 
 
-    def cbUpdatePublishedPose(self):
+    def srvUpdatePublishedPose(self, data):
 
-        for index in range(len(self.last_obj_pose)):
-            # self.pub_obj_id[index] = self.last_obj_id[index]  REMOVED FOR NOW
-            self.pub_obj_pose[index] = self.last_obj_pose[index]
+        if (self.last_obj_pose == []):
+            return (False, "POSE HANDLER - No AR Tags in View")
+        else:
+            self.pub_obj_pose = []
 
-        return True
+            for index in range(len(self.last_obj_pose)):
+                self.pub_obj_pose.append(self.last_obj_pose[index].pose.pose)
+
+            return (True, "POSE HANDLER - Update Complete")
 
 
 def main():
@@ -62,7 +65,6 @@ def main():
     while not rospy.is_shutdown():
         if len(pose_relay.pub_obj_pose) != 0:
             for tag in range(len(pose_relay.pub_obj_pose)):
-                # pose_relay.obj_ID.publish(pose_relay.pub_obj_id[tag])  REMOVED FOR NOW
                 pose_relay.obj_pose.publish(pose_relay.pub_obj_pose[tag])
         else:
             pass
