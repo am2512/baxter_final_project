@@ -9,34 +9,44 @@ from geometry_msgs.msg import (
     Quaternion,
 )
 from std_msgs.msg import Header
-
 from ar_track_alvar_msgs.msg import AlvarMarkers, AlvarMarker
-
-
 
 from baxter_core_msgs.srv import (
     SolvePositionIK,
     SolvePositionIKRequest,
 )
 
+import rospy
+from tf.msg import tfMessage
+from tf.transformations import quaternion_from_euler
+
 #global variables 
 xnew = 0
 ynew = 0
 znew = 0
+qx=0
+qy=0
+qz=0
+qw=0
 
 def callback(data):
     
     global xnew
     global ynew
     global znew
+    global qx
+    global qy
+    global qz
+    global qw
 
     #new values that are obtained from the AR marker
     xnew = data.markers[0].pose.pose.position.x
     ynew = data.markers[0].pose.pose.position.y
     znew = data.markers[0].pose.pose.position.z
-
-   
-    
+    qx = data.markers[0].pose.pose.orientation.x
+    qy = data.markers[0].pose.pose.orientation.y
+    qz = data.markers[0].pose.pose.orientation.z
+    qw = data.markers[0].pose.pose.orientation.w
     # rospy.loginfo("x is: %f" % (data.markers[0].pose.pose.position.x))
     # rospy.loginfo("y is: %f" % (data.markers[0].pose.pose.position.y))
     # rospy.loginfo("z is: %f" % (data.markers[0].pose.pose.position.z))
@@ -49,12 +59,20 @@ def ik_control(limb):
     iksvc = rospy.ServiceProxy(ns, SolvePositionIK)
     ikreq = SolvePositionIKRequest()
     hdr = Header(stamp=rospy.Time.now(), frame_id='base')
-    
-    # print(xnew)
 
+      
     
-        
-        
+
+    # RPY to convert: 0deg, 180deg, 0deg
+    q_rot = quaternion_from_euler(0, 3.14, 0)
+    qx_new = qx*q_rot[0]
+    qy_new = qy*q_rot[1]
+    qz_new = qz*q_rot[2]
+    qw_new = qw*q_rot[3]
+
+    # print "The quaternion representation is %s %s %s %s." % (q[0], q[1], q[2], q[3])
+    
+    # print(xnew)    
     poses = {
         'left': PoseStamped(
             header=hdr,
@@ -65,10 +83,10 @@ def ik_control(limb):
                     z=znew,
                 ),
                 orientation=Quaternion(
-                    x=-0.159821886749,
-                    y=0.984127886766,
-                    z=-0.00293647198525,
-                    w=0.0770755742012,
+                    x=qx_new,
+                    y=qy_new,
+                    z=qz_new,
+                    w=qw_new,
                 ),
             ),
         ),
@@ -114,17 +132,11 @@ def ik_control(limb):
 
 def main():
     rospy.init_node("rsdk_ik_service_client")
- 
-
     rospy.Subscriber("/ar_trackers/ar_pose_marker", AlvarMarkers, callback)
     #hdr = Header(stamp=rospy.Time.now(), frame_id='base')
     time.sleep(1)
     ik_control('left')
-    
     rospy.spin()
    
-
-
-    
 if __name__ == '__main__':
     main()
