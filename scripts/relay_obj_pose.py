@@ -2,11 +2,9 @@
 
 
 import rospy
-import numpy as np
 
 from ar_track_alvar_msgs.msg import (AlvarMarkers, AlvarMarker)
 from geometry_msgs.msg import (Point, Pose, PoseStamped, Quaternion)
-from std_msgs.msg import (Bool, Header, String, UInt32)
 
 from std_srvs.srv import Trigger
 
@@ -15,9 +13,6 @@ class poseHandler():
 
     def __init__(self):
 
-        # Static configuration variables
-        self.update_rate = rospy.Rate(5)
-
         # Publishers and Subscribers
         self.pose_sub = rospy.Subscriber('/z_ar_trackers/ar_pose_marker', AlvarMarkers, self.cbRegisterObjPose)
         self.obj_pose = rospy.Publisher('/z_controls/object_pose', Pose, queue_size=1)
@@ -25,6 +20,9 @@ class poseHandler():
 
         # Services
         self.update_obj_pose = rospy.Service('update_obj_pose', Trigger, self.srvUpdatePublishedPose)
+
+        # Static configuration variables
+        self.update_rate = rospy.Rate(5)
 
         # Variables for latest subscribed poses and actively published poses
         self.last_obj_pose = []

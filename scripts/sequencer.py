@@ -4,7 +4,7 @@
 import rospy
 
 import _init_baxter
-import move2
+import motionControl
 
 from std_srvs.srv import Trigger
 

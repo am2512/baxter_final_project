@@ -1,24 +1,16 @@
 #!/usr/bin/env python
 
 
-import baxter_interface
 import rospy
+import baxter_interface
 
 from baxter_interface import CHECK_VERSION
 from baxter_interface.camera import CameraController
 
 from std_msgs.msg import Header
-from geometry_msgs.msg import (
-    PoseStamped,
-    Pose,
-    Point,
-    Quaternion,
-)
+from geometry_msgs.msg import (PoseStamped, Pose, Point, Quaternion)
 
-from baxter_core_msgs.srv import (
-    SolvePositionIK,
-    SolvePositionIKRequest,
-)
+from baxter_core_msgs.srv import (SolvePositionIK, SolvePositionIKRequest)
 from std_srvs.srv import Empty
 
 
