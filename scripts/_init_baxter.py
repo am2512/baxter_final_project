@@ -144,29 +144,31 @@ class BaxterCtrls():
             rospy.wait_for_service(ns, 5.0)
             resp = iksvc(ikreq)
         except (rospy.ServiceException, rospy.ROSException), e:
-            rospy.logerr("IK SOLVE - Request Service call failed: %s" % (e,))
+            rospy.logerr("IK SOLVER - Request service call failed: %s" % (e,))
             return 1
 
         # If a solution is found, initiate motion to that position
         if (resp.isValid[0]):
-            rospy.loginfo("IK SOLVE - SUCCESS! Valid Joint Solution Found!")
+            rospy.loginfo("IK SOLVER - Success! Valid joint solution found!")
 
             # Format solution into Limb API-compatible dictionary
             limb_joints = dict(zip(resp.joints[0].name, resp.joints[0].position))
 
             # Print Info message to alert users of impending motion
-            rospy.loginfo("WARNING - Moving Baxter's " + limb + " arm to home position.")
+            rospy.loginfo("INIT - WARNING! Moving Baxter's " + limb + " arm to home position.")
 
             if (limb == 'left'):
                 left = baxter_interface.Limb('left')
                 left.move_to_joint_positions(limb_joints)
-            else:
+            elif (limb == 'right'):
                 right = baxter_interface.Limb('right')
                 right.move_to_joint_positions(limb_joints)
+            else:
+                pass
         else:
-            print("INVALID POSE - No Valid Joint Solution Found.")
+            rospy.loginfo("IK SOLVER - Invalid pose - No valid joint solution found.")
 
-        return 0
+        return
 
 
     def setScreenImage(self):

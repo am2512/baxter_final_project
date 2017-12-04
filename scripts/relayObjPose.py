@@ -16,7 +16,6 @@ class poseHandler():
         # Publishers and Subscribers
         self.pose_sub = rospy.Subscriber('/z_ar_trackers/ar_pose_marker', AlvarMarkers, self.cbRegisterObjPose)
         self.obj_pose = rospy.Publisher('/z_controls/object_pose', Pose, queue_size=1)
-        # self.obj_ID = rospy.Publisher('object_ID', UInt32, queue_size=1)  REMOVED FOR NOW
 
         # Services
         self.update_obj_pose = rospy.Service('update_obj_pose', Trigger, self.srvUpdatePublishedPose)
@@ -42,14 +41,14 @@ class poseHandler():
     def srvUpdatePublishedPose(self, data):
 
         if (self.last_obj_pose == []):
-            return (False, "POSE HANDLER - No AR Tags in View")
+            return (False, "POSE HANDLER - Update Failed. No AR Tags in view.")
         else:
             self.pub_obj_pose = []
 
             for index in range(len(self.last_obj_pose)):
                 self.pub_obj_pose.append(self.last_obj_pose[index].pose.pose)
 
-            return (True, "POSE HANDLER - Update Complete")
+            return (True, "POSE HANDLER - Update Complete.")
 
 
 def main():

@@ -1,0 +1,4 @@
+geometry_msgs/Pose offset   # Desired offset position for the motion controller to adjust the current EE position by
+---
+bool success                # Indicate successful run of triggered service
+string message              # Informational, e.g. for error messages
