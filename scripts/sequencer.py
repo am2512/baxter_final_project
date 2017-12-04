@@ -6,6 +6,8 @@ import rospy
 import _init_baxter
 import motionControl
 
+from geometry_msgs.msg import (Point, Pose, PoseStamped, Quaternion)
+
 from me495_baxter_jar.srv import OffsetMove
 from std_srvs.srv import Trigger
 
@@ -49,7 +51,7 @@ def main():
 
     move_offset = rospy.ServiceProxy('move_to_offset_pos', OffsetMove)
     rospy.wait_for_service('move_to_offset_pos', 3.0)
-    
+
     # Initialize Baxter to nominal state
     baxCtrl = _init_baxter.BaxterCtrls()
 
@@ -84,6 +86,14 @@ def main():
         # Move to the pounce position over the detected AR tag
         move_AR_tag()
 
+        rospy.loginfo("Sleeping for 3 seconds.")
+        rospy.sleep(rospy.Duration(3))
+
+        test = OffsetMove()
+
+        print test
+
+        move_AR_tag(test)
 
         # DEBUG
         rospy.loginfo("End of Line")
