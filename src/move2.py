@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import time
 import rospy
+from math import pi
 import baxter_interface
 from geometry_msgs.msg import (
     PoseStamped,
@@ -19,6 +20,8 @@ from baxter_core_msgs.srv import (
 import rospy
 from tf.msg import tfMessage
 from tf.transformations import quaternion_from_euler
+from tf.transformations import quaternion_multiply
+
 
 #global variables 
 xnew = 0
@@ -31,22 +34,23 @@ qw=0
 
 def callback(data):
     
-    global xnew
-    global ynew
-    global znew
-    global qx
-    global qy
-    global qz
-    global qw
+    global xnew_g
+    global ynew_g
+    global znew_g
+    global qx_g
+    global qy_g
+    global qz_g
+    global qw_g
 
     #new values that are obtained from the AR marker
-    xnew = data.markers[0].pose.pose.position.x
-    ynew = data.markers[0].pose.pose.position.y
-    znew = data.markers[0].pose.pose.position.z
-    qx = data.markers[0].pose.pose.orientation.x
-    qy = data.markers[0].pose.pose.orientation.y
-    qz = data.markers[0].pose.pose.orientation.z
-    qw = data.markers[0].pose.pose.orientation.w
+    xnew_g = pose.position.x
+    ynew_g = pose.position.y
+    znew_g = pose.position.z
+    
+    qx_g = pose.orientation.x
+    qy_g = pose.orientation.y
+    qz_g = pose.orientation.z
+    qw_g = pose.orientation.w
     # rospy.loginfo("x is: %f" % (data.markers[0].pose.pose.position.x))
     # rospy.loginfo("y is: %f" % (data.markers[0].pose.pose.position.y))
     # rospy.loginfo("z is: %f" % (data.markers[0].pose.pose.position.z))
@@ -59,17 +63,13 @@ def ik_control(limb):
     iksvc = rospy.ServiceProxy(ns, SolvePositionIK)
     ikreq = SolvePositionIKRequest()
     hdr = Header(stamp=rospy.Time.now(), frame_id='base')
-
-      
-    
-
+    q_old=[qx,qy,qz,qw]
+    print q_old
     # RPY to convert: 0deg, 180deg, 0deg
-    q_rot = quaternion_from_euler(0, 3.14, 0)
-    qx_new = qx*q_rot[0]
-    qy_new = qy*q_rot[1]
-    qz_new = qz*q_rot[2]
-    qw_new = qw*q_rot[3]
-
+    q_rot = quaternion_from_euler(0, pi, 0)
+    print q_rot
+    q_new = quaternion_multiply(q_rot,q_old)
+    print q_new
     # print "The quaternion representation is %s %s %s %s." % (q[0], q[1], q[2], q[3])
     
     # print(xnew)    
@@ -83,10 +83,10 @@ def ik_control(limb):
                     z=znew,
                 ),
                 orientation=Quaternion(
-                    x=qx_new,
-                    y=qy_new,
-                    z=qz_new,
-                    w=qw_new,
+                    x=q_new[0],
+                    y=q_new[1],
+                    z=q_new[2],
+                    w=q_new[3],
                 ),
             ),
         ),
@@ -127,16 +127,26 @@ def ik_control(limb):
         else: 
             right = baxter_interface.Limb('right')
             right.move_to_joint_positions(limb_joints)
+        rospy.sleep(5)
     else:
         print("INVALID POSE - No Valid Joint Solution Found.")
 
+
 def main():
-    rospy.init_node("rsdk_ik_service_client")
-    rospy.Subscriber("/ar_trackers/ar_pose_marker", AlvarMarkers, callback)
-    #hdr = Header(stamp=rospy.Time.now(), frame_id='base')
-    time.sleep(1)
-    ik_control('left')
-    rospy.spin()
+	while(1):
+	    rospy.init_node("rsdk_ik_service_client")
+	    rospy.Subscriber("/z_controls/object_pose", Pose, callback)
+	    #hdr = Header(stamp=rospy.Time.now(), frame_id='base')
+	    time.sleep(1)
+	    xnew = xnew_g
+	    ynew = ynew_g
+	    xnew = znew_g
+	    qx = qx_g
+	    qy = qy_g
+	    qz = qz_g
+	    qw = qw_g
+	    ik_control('left')
+	    rospy.spin()
    
 if __name__ == '__main__':
     main()
