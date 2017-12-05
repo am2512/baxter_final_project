@@ -1,24 +1,16 @@
 #!/usr/bin/env python
 
 
-import baxter_interface
 import rospy
+import baxter_interface
 
 from baxter_interface import CHECK_VERSION
 from baxter_interface.camera import CameraController
 
 from std_msgs.msg import Header
-from geometry_msgs.msg import (
-    PoseStamped,
-    Pose,
-    Point,
-    Quaternion,
-)
+from geometry_msgs.msg import (PoseStamped, Pose, Point, Quaternion)
 
-from baxter_core_msgs.srv import (
-    SolvePositionIK,
-    SolvePositionIKRequest,
-)
+from baxter_core_msgs.srv import (SolvePositionIK, SolvePositionIKRequest)
 from std_srvs.srv import Empty
 
 
@@ -152,29 +144,31 @@ class BaxterCtrls():
             rospy.wait_for_service(ns, 5.0)
             resp = iksvc(ikreq)
         except (rospy.ServiceException, rospy.ROSException), e:
-            rospy.logerr("IK SOLVE - Request Service call failed: %s" % (e,))
+            rospy.logerr("IK SOLVER - Request service call failed: %s" % (e,))
             return 1
 
         # If a solution is found, initiate motion to that position
         if (resp.isValid[0]):
-            rospy.loginfo("IK SOLVE - SUCCESS! Valid Joint Solution Found!")
+            rospy.loginfo("IK SOLVER - Success! Valid joint solution found!")
 
             # Format solution into Limb API-compatible dictionary
             limb_joints = dict(zip(resp.joints[0].name, resp.joints[0].position))
 
             # Print Info message to alert users of impending motion
-            rospy.loginfo("WARNING - Moving Baxter's " + limb + " arm to home position.")
+            rospy.loginfo("INIT - WARNING! Moving Baxter's " + limb + " arm to home position.")
 
             if (limb == 'left'):
                 left = baxter_interface.Limb('left')
                 left.move_to_joint_positions(limb_joints)
-            else:
+            elif (limb == 'right'):
                 right = baxter_interface.Limb('right')
                 right.move_to_joint_positions(limb_joints)
+            else:
+                pass
         else:
-            print("INVALID POSE - No Valid Joint Solution Found.")
+            rospy.loginfo("IK SOLVER - Invalid pose - No valid joint solution found.")
 
-        return 0
+        return
 
 
     def setScreenImage(self):

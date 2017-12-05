@@ -2,11 +2,9 @@
 
 
 import rospy
-import numpy as np
 
 from ar_track_alvar_msgs.msg import (AlvarMarkers, AlvarMarker)
 from geometry_msgs.msg import (Point, Pose, PoseStamped, Quaternion)
-from std_msgs.msg import (Bool, Header, String, UInt32)
 
 from std_srvs.srv import Trigger
 
@@ -15,16 +13,15 @@ class poseHandler():
 
     def __init__(self):
 
-        # Static configuration variables
-        self.update_rate = rospy.Rate(5)
-
         # Publishers and Subscribers
         self.pose_sub = rospy.Subscriber('/z_ar_trackers/ar_pose_marker', AlvarMarkers, self.cbRegisterObjPose)
         self.obj_pose = rospy.Publisher('/z_controls/object_pose', Pose, queue_size=1)
-        # self.obj_ID = rospy.Publisher('object_ID', UInt32, queue_size=1)  REMOVED FOR NOW
 
         # Services
         self.update_obj_pose = rospy.Service('update_obj_pose', Trigger, self.srvUpdatePublishedPose)
+
+        # Static configuration variables
+        self.update_rate = rospy.Rate(5)
 
         # Variables for latest subscribed poses and actively published poses
         self.last_obj_pose = []
@@ -44,14 +41,14 @@ class poseHandler():
     def srvUpdatePublishedPose(self, data):
 
         if (self.last_obj_pose == []):
-            return (False, "POSE HANDLER - No AR Tags in View")
+            return (False, "POSE HANDLER - Update Failed. No AR Tags in view.")
         else:
             self.pub_obj_pose = []
 
             for index in range(len(self.last_obj_pose)):
                 self.pub_obj_pose.append(self.last_obj_pose[index].pose.pose)
 
-            return (True, "POSE HANDLER - Update Complete")
+            return (True, "POSE HANDLER - Update Complete.")
 
 
 def main():
