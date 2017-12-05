@@ -79,28 +79,28 @@ class IK_solver():
             rospy.logerr("Service call failed: %s" % (e,))
             return 1
 
-        # Check if result valid, and type of seed ultimately used to get solution
-        # convert rospy's string representation of uint8[]'s to int's
-        # resp_seeds = struct.unpack('<%dB' % len(resp.result_type),
-        #                            resp.result_type)
-        # if (resp_seeds[0] != resp.RESULT_INVALID):
-        #     seed_str = {
-        #                 self.ikreq.SEED_USER: 'User Provided Seed',
-        #                 self.ikreq.SEED_CURRENT: 'Current Joint Angles',
-        #                 self.ikreq.SEED_NS_MAP: 'Nullspace Setpoints',
-        #                }.get(resp_seeds[0], 'None')
-        #     print("SUCCESS - Valid Joint Solution Found from Seed Type: %s" %
-        #           (seed_str,))
-        #     # Format solution into Limb API-compatible dictionary
-        #
-        #     #self.left.move_to_joint_positions(limb_joints)
-        #
-        #     print "\nIK Joint Solution:\n", self.limb_joints
-        #     print "------------------"
-        #     print "Response Message:\n", resp
-        # else:
-        #     print("INVALID POSE - No Valid Joint Solution Found.")
-        #     self.flag = 0;
+        #Check if result valid, and type of seed ultimately used to get solution
+        #convert rospy's string representation of uint8[]'s to int's
+        resp_seeds = struct.unpack('<%dB' % len(resp.result_type),
+                                   resp.result_type)
+        if (resp_seeds[0] != resp.RESULT_INVALID):
+            seed_str = {
+                        self.ikreq.SEED_USER: 'User Provided Seed',
+                        self.ikreq.SEED_CURRENT: 'Current Joint Angles',
+                        self.ikreq.SEED_NS_MAP: 'Nullspace Setpoints',
+                       }.get(resp_seeds[0], 'None')
+            print("SUCCESS - Valid Joint Solution Found from Seed Type: %s" %
+                  (seed_str,))
+            # Format solution into Limb API-compatible dictionary
+
+            #self.left.move_to_joint_positions(limb_joints)
+
+            print "\nIK Joint Solution:\n", self.limb_joints
+            print "------------------"
+            print "Response Message:\n", resp
+        else:
+            print("INVALID POSE - No Valid Joint Solution Found.")
+            self.flag = 0;
 
         self.limb_joints = dict(zip(resp.joints[0].name, resp.joints[0].position))
         self.left_var = baxter_interface.Limb('left')
@@ -135,30 +135,22 @@ class IK_solver():
         args = parser.parse_args(rospy.myargv()[1:])
         self.ik_test('left')
         if (self.flag != 1):
+            print(self.limb_joints)
             self.left_var.move_to_joint_positions(self.limb_joints)
             print("I moved to the desired pose. Yayy!")
-            rospy.sleep(4)
+            rospy.sleep(3)
         else:
             print("Gonna try again.")
             # self.ikreq.seed_mode = 2
             # self.flag = 1
-        return
 
-        # def unsubscribe(self):
-        #     sub.unregister()
 
 def main():
     ik_class = IK_solver()
-    # AR_location_flag = 0
 
     #define desired pose
     rospy.Subscriber('/z_controls/object_pose', Pose, ik_class.callback)
     rospy.spin()
-
-    # if (AR_location_flag == 1):
-    #     ik_class.unsubscribe()
-
-    print("I'm ready.")
 
 if __name__ == '__main__':
     main()
