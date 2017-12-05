@@ -20,52 +20,38 @@ class motionControl():
         # Publishers and Subscribers
         self.cur_left_ee_state = rospy.Subscriber('/robot/limb/left/endpoint_state', EndpointState, self.cbSetLeftEEPosition)
         self.cur_right_ee_state = rospy.Subscriber('/robot/limb/right/endpoint_state', EndpointState, self.cbSetRightEEPosition)
-        self.obj_pose_sub = rospy.Subscriber('/z_controls/object_pose', Pose, self.cbSetTagPosition)
+        self.obj_pose_sub = rospy.Subscriber('object_pose', Pose, self.cbSetTagPosition)
 
         # Services
         self.move_to_AR_tag = rospy.Service('move_to_AR_tag', Trigger, self.svcMoveToARTag)
         self.move_to_offset_pos = rospy.Service('move_to_offset_pos', OffsetMove, self.svcMoveToOffsetPos)
 
         # Static configuration variables
-        self.limb = 'left'
+        self.limb = 'left'      # Hardcoded for now
 
 
     def cbSetTagPosition(self, data):
 
         # New values that are obtained from the published object pose
-        self.x_tag = data.position.x
-        self.y_tag = data.position.y
-        self.z_tag = data.position.z
+        self.tag_point = data.position
 
         return
 
 
     def cbSetLeftEEPosition(self, data):
 
-        # New values that are obtained from the published object pose
-        self.px_left = data.pose.position.x
-        self.py_left = data.pose.position.y
-        self.pz_left = data.pose.position.z
-
-        self.qx_left = data.pose.orientation.x
-        self.qy_left = data.pose.orientation.y
-        self.qz_left = data.pose.orientation.z
-        self.qw_left = data.pose.orientation.w
+        # New values obtained from the left end-effector's published pose
+        self.left_ee_point = data.pose.position
+        self.left_ee_orientation = data.pose.orientation
 
         return
 
 
     def cbSetRightEEPosition(self, data):
 
-        # New values that are obtained from the published object pose
-        self.px_right = data.pose.position.x
-        self.py_right = data.pose.position.y
-        self.pz_right = data.pose.position.z
-
-        self.qx_right = data.pose.orientation.x
-        self.qy_right = data.pose.orientation.y
-        self.qz_right = data.pose.orientation.z
-        self.qw_right = data.pose.orientation.w
+        # New values obtained from the right end-effector's published pose
+        self.right_ee_point = data.pose.position
+        self.right_ee_orientation = data.pose.orientation
 
         return
 
@@ -84,11 +70,7 @@ class motionControl():
             'left': PoseStamped(
                 header = hdr,
                 pose = Pose(
-                    position = Point(
-                        x = self.x_tag,
-                        y = self.y_tag,
-                        z = self.z_tag,
-                    ),
+                    position = self.tag_point,
                     orientation = Quaternion(
                         x = -0.159821886749,
                         y = 0.984127886766,
@@ -100,11 +82,7 @@ class motionControl():
             'right': PoseStamped(
                 header = hdr,
                 pose = Pose(
-                    position = Point(
-                        x = self.x_tag,
-                        y = self.y_tag,
-                        z = self.z_tag,
-                    ),
+                    position = self.tag_point,
                     orientation = Quaternion(
                         x = 0.367048116303,
                         y = 0.885911751787,
@@ -118,7 +96,6 @@ class motionControl():
         # Set the desired pose in the service request message to pose information pulled from the object pose topic
         ikreq.pose_stamp.append(poses[self.limb])
 
-
         try:
             rospy.wait_for_service(ns, 5.0)
             resp = iksvc(ikreq)
@@ -127,7 +104,7 @@ class motionControl():
             return (False, "Unknown exception occurred.")
 
         if (resp.isValid[0]):
-            rospy.loginfo("IKSVC - Success! Valid joint solution found.")
+            rospy.loginfo("IK SOLVER - Success! Valid joint solution found.")
 
             # Format solution into Limb API-compatible dictionary
             limb_joints = dict(zip(resp.joints[0].name, resp.joints[0].position))
@@ -158,42 +135,38 @@ class motionControl():
         ikreq = SolvePositionIKRequest()
 
         # Update header information based on current time and with reference to base frame
-        hdr = Header(stamp = rospy.Time.now(), frame_id='base')
+        hdr = Header(stamp = rospy.Time.now(), frame_id = 'base')
 
-        poses = {
-            'left': PoseStamped(
-                header = hdr,
-                pose = Pose(
-                    position = Point(
-                        x = self.px_left + data.position.x,
-                        y = self.py_left + data.position.y,
-                        z = self.pz_left + data.position.z,
-                    ),
-                    orientation = Quaternion(
-                        x = self.qx_left + data.orientation.x,
-                        y = self.qy_left + data.orientation.y,
-                        z = self.qz_left + data.orientation.z,
-                        w = self.qw_left + data.orientation.w,
-                    ),
-                ),
-            ),
-            'right': PoseStamped(
-                header = hdr,
-                pose = Pose(
-                    position = Point(
-                        x = self.px_right + data.position.x,
-                        y = self.py_right + data.position.y,
-                        z = self.pz_right + data.position.z,
-                    ),
-                    orientation = Quaternion(
-                        x = self.qx_right + data.position.x,
-                        y = self.qy_right + data.position.y,
-                        z = self.qz_right + data.position.z,
-                        w = self.qw_right + data.position.w,
-                    )
-                )
-            )
-        }
+        # Add input offsets to currently stored end-effector positions
+        # Left offset
+        left_offset = PoseStamped
+        left_offset.header = hdr
+
+        left_offset.pose.position.x = data.position.x + self.left_ee_point.x
+        left_offset.pose.position.y = data.position.y + self.left_ee_point.y
+        left_offset.pose.position.z = data.position.z + self.left_ee_point.z
+
+        left_offset.pose.orientation.x = data.orientation.x + self.left_ee_orientation.x
+        left_offset.pose.orientation.y = data.orientation.y + self.left_ee_orientation.y
+        left_offset.pose.orientation.z = data.orientation.z + self.left_ee_orientation.z
+        left_offset.pose.orientation.w = data.orientation.w + self.left_ee_orientation.w
+
+        # Right offset
+        right_offset = PoseStamped
+        right_offset.header = hdr
+
+        right_offset.pose.position.x = data.position.x + self.right_ee_point.x
+        right_offset.pose.position.y = data.position.y + self.right_ee_point.y
+        right_offset.pose.position.z = data.position.z + self.right_ee_point.z
+
+        right_offset.pose.orientation.x = data.orientation.x + self.right_ee_orientation.x
+        right_offset.pose.orientation.y = data.orientation.y + self.right_ee_orientation.y
+        right_offset.pose.orientation.z = data.orientation.z + self.right_ee_orientation.z
+        right_offset.pose.orientation.w = data.orientation.w + self.right_ee_orientation.w
+
+
+        poses = { 'left' : left_offset,
+                  'right': right_offset }
 
         # Set the desired pose in the service request message to pose information pulled from the object pose topic
         ikreq.pose_stamp.append(poses[self.limb])
@@ -231,8 +204,10 @@ class motionControl():
 
 def main():
 
+    # Node initialization
     rospy.init_node("motion_controller")
 
+    # Class initialization
     motionControl()
 
     while not rospy.is_shutdown():

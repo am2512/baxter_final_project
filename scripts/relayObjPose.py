@@ -14,8 +14,8 @@ class poseHandler():
     def __init__(self):
 
         # Publishers and Subscribers
-        self.pose_sub = rospy.Subscriber('/z_ar_trackers/ar_pose_marker', AlvarMarkers, self.cbRegisterObjPose)
-        self.obj_pose = rospy.Publisher('/z_controls/object_pose', Pose, queue_size=1)
+        self.pose_sub = rospy.Subscriber('ar_pose_marker', AlvarMarkers, self.cbRegisterObjPose)
+        self.obj_pose = rospy.Publisher('object_pose', Pose, queue_size = 1)
 
         # Services
         self.update_obj_pose = rospy.Service('update_obj_pose', Trigger, self.srvUpdatePublishedPose)

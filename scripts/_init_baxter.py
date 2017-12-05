@@ -23,7 +23,7 @@ class BaxterCtrls():
 
         # Reset the cameras and establish camera controller connections
         self.reset_srv = rospy.ServiceProxy('cameras/reset', Empty)
-        rospy.wait_for_service('cameras/reset', timeout=10)
+        rospy.wait_for_service('cameras/reset', timeout = 10)
         self.reset_srv()
 
         # Home position definitions - Determined by moving Baxter to safe positions
@@ -105,7 +105,7 @@ class BaxterCtrls():
         rospy.loginfo("Enabling 'head' and 'left_hand' cameras w/ output image resolution of 1280x800.")
 
         # Start camera setup after camera/list service is available
-        rospy.wait_for_service('cameras/list', timeout=10)
+        rospy.wait_for_service('cameras/list', timeout = 10)
 
         head_cam = CameraController('head_camera')
         lh_cam = CameraController('left_hand_camera')
@@ -129,7 +129,7 @@ class BaxterCtrls():
         ikreq = SolvePositionIKRequest()
 
         # Build header information
-        self.hdr = Header(stamp = rospy.Time.now(), frame_id='base')
+        self.hdr = Header(stamp = rospy.Time.now(), frame_id = 'base')
 
         # Assemble pose request based on "limb" argument passed to function
         self.pose_requested = PoseStamped(
