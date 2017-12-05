@@ -49,7 +49,6 @@ class IK_solver():
         self.flag = 0
 
     def ik_test(self, limb):
-
         ns = "ExternalTools/" + limb + "/PositionKinematicsNode/IKService"
         iksvc = rospy.ServiceProxy(ns, SolvePositionIK)
         self.ikreq = SolvePositionIKRequest()
@@ -71,6 +70,7 @@ class IK_solver():
         #         ),
         #     )
         # )
+        print(self.poses[limb])
         self.ikreq.pose_stamp.append(self.poses[limb])
         try:
             rospy.wait_for_service(ns, 5.0)
@@ -84,30 +84,28 @@ class IK_solver():
         resp_seeds = struct.unpack('<%dB' % len(resp.result_type),
                                    resp.result_type)
         if (resp_seeds[0] != resp.RESULT_INVALID):
-            seed_str = {
-                        self.ikreq.SEED_USER: 'User Provided Seed',
-                        self.ikreq.SEED_CURRENT: 'Current Joint Angles',
-                        self.ikreq.SEED_NS_MAP: 'Nullspace Setpoints',
-                       }.get(resp_seeds[0], 'None')
-            print("SUCCESS - Valid Joint Solution Found from Seed Type: %s" %
-                  (seed_str,))
+            # seed_str = {
+            #             self.ikreq.SEED_USER: 'User Provided Seed',
+            #             self.ikreq.SEED_CURRENT: 'Current Joint Angles',
+            #             self.ikreq.SEED_NS_MAP: 'Nullspace Setpoints',
+            #            }.get(resp_seeds[0], 'None')
+            print("SUCCESS - Valid Joint Solution Found ")
             # Format solution into Limb API-compatible dictionary
 
-            #self.left.move_to_joint_positions(limb_joints)
+            # self.left.move_to_joint_positions(limb_joints)
 
-            print "\nIK Joint Solution:\n", self.limb_joints
-            print "------------------"
-            print "Response Message:\n", resp
+            # print "\nIK Joint Solution:\n", self.limb_joints
+            # print "------------------"
+            # print "Response Message:\n", resp
         else:
             print("INVALID POSE - No Valid Joint Solution Found.")
-            self.flag = 0;
 
         self.limb_joints = dict(zip(resp.joints[0].name, resp.joints[0].position))
         self.left_var = baxter_interface.Limb('left')
-        return 0
+        # return 0
 
     def callback(self, data):
-        q_rot = quaternion_from_euler(0,pi,0)
+        q_rot = quaternion_from_euler(pi,0,0)
         q_desired = [data.orientation.x, data.orientation.y, data.orientation.z, data.orientation.w]
         print(q_desired)
         q_new = quaternion_multiply(q_rot, q_desired)

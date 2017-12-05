@@ -1,19 +1,21 @@
 #!/usr/bin/env python
 
-
 import rospy
 
 import _init_baxter
-import motionControl
+import move2
 
-from geometry_msgs.msg import (Point, Pose, PoseStamped, Quaternion)
-
-from me495_baxter_jar.srv import OffsetMove
 from std_srvs.srv import Trigger
 
 
+def lower():
+
+
+    rospy.loginfo("I'm XX above the lid!")
+
+
 def main():
-    
+
     '''
     ### BASELINE PLAN ###
     # Initialize code
@@ -21,7 +23,7 @@ def main():
     # Configure cameras and set resolution to 1280x800
     # Execution Loop
         # Move to Pounce Position (above table)
-        # Get Pose information from either AR tags or color segmentation
+        # *** Get Pose information from either AR tags or color segmentation
         # *** Trigger MotionController node to move to some offset position from tracked pose
         # *** Pick Position Loop
             # *** Move towards pick position
@@ -46,17 +48,15 @@ def main():
     update_obj_pose = rospy.ServiceProxy('update_obj_pose', Trigger)
     rospy.wait_for_service('update_obj_pose', 3.0)
 
-    move_AR_tag = rospy.ServiceProxy('move_to_AR_tag', Trigger)
-    rospy.wait_for_service('move_to_AR_tag', 3.0)
-
-    move_offset = rospy.ServiceProxy('move_to_offset_pos', OffsetMove)
-    rospy.wait_for_service('move_to_offset_pos', 3.0)
-
     # Initialize Baxter to nominal state
     baxCtrl = _init_baxter.BaxterCtrls()
 
     baxCtrl.enableBaxter()
     baxCtrl.cameraSetupHeadLH()
+
+    # Move Baxter's arms to home
+    baxCtrl.moveArmToHome('right')
+    baxCtrl.moveArmToHome('left')
 
     # Calibrate each end effector gripper
     baxCtrl.calibrateGrippers()
@@ -69,10 +69,6 @@ def main():
     ##################
     while (True):
 
-        # Move Baxter's arms to home
-        baxCtrl.moveArmToHome('right')
-        baxCtrl.moveArmToHome('left')
-
         ## If sequencer set to AR TRACK MODE, set trigger to update the published pose for an AR tag matching a specific ID value
         ## If sequencer set to COLOR SEGMENT MODE, set trigger to identify the pose of an object matching the material characteristics
         ##   of target object(s)
@@ -83,21 +79,16 @@ def main():
         # Update the published position of the lid
         update_obj_pose()
 
-        # Move to the pounce position over the detected AR tag
-        move_AR_tag()
+        # move to a position fixed z above the lid
 
-        rospy.loginfo("Sleeping for 3 seconds.")
-        rospy.sleep(rospy.Duration(3))
+        # lower until IR sensor reads 0.2
+        lower()
 
-        test = OffsetMove()
+        # grip the cup
 
-        print test
+        #
 
-        move_AR_tag(test)
 
-        # DEBUG
-        rospy.loginfo("End of Line")
-        # END DEBUG
 
         break
 
