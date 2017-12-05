@@ -41,15 +41,18 @@ def main():
     # Start master controller ('director') node
     rospy.init_node('director')
 
-    # Service initializations
-    update_obj_pose = rospy.ServiceProxy('update_obj_pose', Trigger)
-    rospy.wait_for_service('update_obj_pose', 3.0)
+    # Service initializations (IMPORTANT!!!)
+    update_obj_pose = rospy.ServiceProxy('pose_relay/update_obj_pose', Trigger)
+    rospy.wait_for_service('pose_relay/update_obj_pose', 3.0)
 
-    move_AR_tag = rospy.ServiceProxy('move_to_AR_tag', Trigger)
-    rospy.wait_for_service('move_to_AR_tag', 3.0)
+    move_AR_tag = rospy.ServiceProxy('motion_controller/move_to_AR_tag', Trigger)
+    move_offset = rospy.ServiceProxy('motion_controller/move_to_offset_pos', OffsetMove)
+    rospy.wait_for_service('motion_controller/move_to_offset_pos', 3.0)
 
-    move_offset = rospy.ServiceProxy('move_to_offset_pos', OffsetMove)
-    rospy.wait_for_service('move_to_offset_pos', 3.0)
+    unscrew_lid = rospy.ServiceProxy('gripper_controller/unscrew_lid', Trigger)
+    screw_lid = rospy.ServiceProxy('gripper_controller/screw_lid', Trigger)
+    rospy.wait_for_service('gripper_controller/screw_lid', 3.0)
+
 
     # Initialize Baxter to nominal state
     baxCtrl = _init_baxter.BaxterCtrls()

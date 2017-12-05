@@ -14,15 +14,15 @@ class gripperControls():
     def __init__(self):
 
         # Publishers and Subscribers
-        rospy.Subscriber('robot/range/left_hand_range/state', Range, self.cb_rangefinder)
-        rospy.Subscriber('robot/ref_joint_states', JointState, self.cb_joint_states)
+        rospy.Subscriber('/robot/range/left_hand_range/state', Range, self.cb_rangefinder)
+        rospy.Subscriber('/robot/ref_joint_states', JointState, self.cb_joint_states)
 
-        self.pub_grip = rospy.Publisher('robot/end_effector/left_gripper/command', EndEffectorCommand, queue_size = 10)
-        self.pub_turn = rospy.Publisher('robot/limb/left/joint_command', JointCommand, queue_size = 10)
+        self.pub_grip = rospy.Publisher('/robot/end_effector/left_gripper/command', EndEffectorCommand, queue_size = 10)
+        self.pub_turn = rospy.Publisher('/robot/limb/left/joint_command', JointCommand, queue_size = 10)
 
         # Services
-        rospy.Service('unscrew_lid', Trigger, self.srv_opening_sequence)
-        rospy.Service('screw_lid', Trigger, self.srv_closing_sequence)
+        rospy.Service('gripper_controller/unscrew_lid', Trigger, self.srv_opening_sequence)
+        rospy.Service('gripper_controller/screw_lid', Trigger, self.srv_closing_sequence)
 
         # Class-specific variables
         self.distance = 0

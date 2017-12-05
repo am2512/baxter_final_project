@@ -23,8 +23,8 @@ class motionControls():
         rospy.Subscriber('object_pose', Pose, self.cb_set_tag_position)
 
         # Services
-        rospy.Service('move_to_AR_tag', Trigger, self.svc_move_to_AR_tag)
-        rospy.Service('move_to_offset_pos', OffsetMove, self.svc_move_to_offset_pos)
+        rospy.Service('motion_controller/move_to_AR_tag', Trigger, self.svc_move_to_AR_tag)
+        rospy.Service('motion_controller/move_to_offset_pos', OffsetMove, self.svc_move_to_offset_pos)
 
         # Static configuration variables
         self.limb = 'left'      # Hardcoded for now

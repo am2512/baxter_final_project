@@ -18,7 +18,7 @@ class poseHandler():
         self.obj_pose = rospy.Publisher('object_pose', Pose, queue_size = 1)
 
         # Services
-        self.update_obj_pose = rospy.Service('update_obj_pose', Trigger, self.svc_update_published_pose)
+        self.update_obj_pose = rospy.Service('pose_relay/update_obj_pose', Trigger, self.svc_update_published_pose)
 
         # Static configuration variables
         self.update_rate = rospy.Rate(5)
