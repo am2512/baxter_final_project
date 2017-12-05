@@ -107,50 +107,58 @@ class IK_solver():
         return 0
 
     def callback(self, data):
-        if (1):
-            q_rot = quaternion_from_euler(0,pi,0)
-            q_desired = [data.orientation.x, data.orientation.y, data.orientation.z, data.orientation.w]
-            print(q_desired)
-            q_new = quaternion_multiply(q_rot, q_desired)
-            new_pose = data
-            new_pose.orientation.x = q_new[0]
-            new_pose.orientation.y = q_new[1]
-            new_pose.orientation.z = q_new[2]
-            new_pose.orientation.w = q_new[3]
-            self.poses = {
-                'left': PoseStamped(
-                    header=Header(stamp=rospy.Time.now(), frame_id='base'),
-                    pose=new_pose
-                    )
-            }
-            print("I got a new pose. Yayy!")
+        q_rot = quaternion_from_euler(0,pi,0)
+        q_desired = [data.orientation.x, data.orientation.y, data.orientation.z, data.orientation.w]
+        print(q_desired)
+        q_new = quaternion_multiply(q_rot, q_desired)
+        new_pose = data
+        new_pose.orientation.x = q_new[0]
+        new_pose.orientation.y = q_new[1]
+        new_pose.orientation.z = q_new[2]
+        new_pose.orientation.w = q_new[3]
+        self.poses = {
+            'left': PoseStamped(
+                header=Header(stamp=rospy.Time.now(), frame_id='base'),
+                pose=new_pose
+                )
+        }
+        print("I got a new pose. Yayy!")
 
-            # find IK solution
-            arg_fmt = argparse.RawDescriptionHelpFormatter
-            parser = argparse.ArgumentParser(formatter_class=arg_fmt,
-                                             description=main.__doc__)
-            parser.add_argument(
-                '-l', '--limb', choices=['left'], required=True,
-                help="the limb to test"
-            )
-            args = parser.parse_args(rospy.myargv()[1:])
-            self.ik_test('left')
-            if (self.flag != 1):
-                self.left_var.move_to_joint_positions(self.limb_joints)
-                print("I moved to the desired pose. Yayy!")
-                rospy.sleep(5)
-            else:
-                print("Gonna try again.")
-                # self.ikreq.seed_mode = 2
-                # self.flag = 1
-            return
+        # find IK solution
+        arg_fmt = argparse.RawDescriptionHelpFormatter
+        parser = argparse.ArgumentParser(formatter_class=arg_fmt,
+                                         description=main.__doc__)
+        parser.add_argument(
+            '-l', '--limb', choices=['left'], required=True,
+            help="the limb to test"
+        )
+        args = parser.parse_args(rospy.myargv()[1:])
+        self.ik_test('left')
+        if (self.flag != 1):
+            self.left_var.move_to_joint_positions(self.limb_joints)
+            print("I moved to the desired pose. Yayy!")
+            rospy.sleep(4)
+        else:
+            print("Gonna try again.")
+            # self.ikreq.seed_mode = 2
+            # self.flag = 1
+        return
+
+        # def unsubscribe(self):
+        #     sub.unregister()
 
 def main():
     ik_class = IK_solver()
+    # AR_location_flag = 0
 
     #define desired pose
-    pose = rospy.Subscriber('/z_controls/object_pose', Pose, ik_class.callback)
+    rospy.Subscriber('/z_controls/object_pose', Pose, ik_class.callback)
     rospy.spin()
+
+    # if (AR_location_flag == 1):
+    #     ik_class.unsubscribe()
+
+    print("I'm ready.")
 
 if __name__ == '__main__':
     main()
