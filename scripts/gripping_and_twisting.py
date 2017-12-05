@@ -8,6 +8,8 @@ from baxter_core_msgs.msg import EndEffectorCommand
 from std_srvs.srv import SetBool
 from sensor_msgs.msg import JointState
 
+from geometry_msgs.msg import Pose
+
 class Opening():
     def __init__(self):
         self.distance = 100
@@ -15,6 +17,7 @@ class Opening():
 
         self.pub_grip = rospy.Publisher('robot/end_effector/left_gripper/command', EndEffectorCommand, queue_size=10)
         self.pub_turn = rospy.Publisher('robot/limb/left/joint_command', JointCommand, queue_size=10)
+        self.pub_move = rospy.Publisher('move_to_position', Pose, queue_size=10, latch=True)
 
         rospy.Subscriber('robot/ref_joint_states', JointState, self.callback_states)
         self.current_states = JointState()
@@ -22,6 +25,9 @@ class Opening():
     def callback_IR(self, data):
         self.distance = data.range
         # rospy.loginfo("I'm %f above the lid!", self.distance)
+
+    def callback_AR(self, data):
+        self.AR_pose = data
 
     def callback_states(self, data):
         self.current_states = data
@@ -67,6 +73,17 @@ class Opening():
         self.pub_turn.publish(self.turn)
         rospy.sleep(1)
 
+    def move_to_AR(self):
+        self.pub_move.publish(self.AR_pose)
+        rospy.sleep(5)
+
+    def move_to_Z(self, z_movement):
+        self.AR_pose.position.z = self.AR_pose.position.z + z_movement
+        self.pub_move.publish(self.AR_pose)
+        rospy.sleep(5)
+
+
+
 def main(input):
     if (input.data == 1):
         rospy.sleep(2)
@@ -78,10 +95,15 @@ def main(input):
         # rospy.loginfo("DISTANCE: %f", grip_class.distance)
         # if (grip_class.distance < 0.15):
 
+        rospy.Subscriber('/z_controls/object_pose', Pose, grip_class.callback_AR)
+        rospy.sleep(1)
+
         null_state = JointState()
         null_state = grip_class.current_states
         count = 0
         while (count<3):
+            grip_class.move_to_AR()
+            grip_class.move_to_Z(-0.05)
             grip_class.release_cup()
             grip_class.twist_CW()
             grip_class.grip_cup()

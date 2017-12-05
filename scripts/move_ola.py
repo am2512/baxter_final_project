@@ -46,7 +46,8 @@ class IK_solver():
                 ),
             )
         }
-        self.flag = 0
+        self.flag_done = 0
+        self.flag_valid = 0
 
     def ik_test(self, limb):
         ns = "ExternalTools/" + limb + "/PositionKinematicsNode/IKService"
@@ -90,6 +91,7 @@ class IK_solver():
             #             self.ikreq.SEED_NS_MAP: 'Nullspace Setpoints',
             #            }.get(resp_seeds[0], 'None')
             print("SUCCESS - Valid Joint Solution Found ")
+            self.flag_valid = 1
             # Format solution into Limb API-compatible dictionary
 
             # self.left.move_to_joint_positions(limb_joints)
@@ -99,6 +101,7 @@ class IK_solver():
             # print "Response Message:\n", resp
         else:
             print("INVALID POSE - No Valid Joint Solution Found.")
+            self.flag_valid = 0
 
         self.limb_joints = dict(zip(resp.joints[0].name, resp.joints[0].position))
         self.left_var = baxter_interface.Limb('left')
@@ -107,7 +110,6 @@ class IK_solver():
     def callback(self, data):
         q_rot = quaternion_from_euler(pi,0,0)
         q_desired = [data.orientation.x, data.orientation.y, data.orientation.z, data.orientation.w]
-        print(q_desired)
         q_new = quaternion_multiply(q_rot, q_desired)
         new_pose = data
         new_pose.orientation.x = q_new[0]
@@ -127,28 +129,32 @@ class IK_solver():
         parser = argparse.ArgumentParser(formatter_class=arg_fmt,
                                          description=main.__doc__)
         parser.add_argument(
-            '-l', '--limb', choices=['left'], required=True,
+            '-l', '--limb', choices=['left'], required=False,
             help="the limb to test"
         )
         args = parser.parse_args(rospy.myargv()[1:])
         self.ik_test('left')
-        if (self.flag != 1):
+        if (self.flag_valid == 1):
             print(self.limb_joints)
             self.left_var.move_to_joint_positions(self.limb_joints)
             print("I moved to the desired pose. Yayy!")
             rospy.sleep(3)
+            self.flag_done = 1
+            return (self.pose)
         else:
-            print("Gonna try again.")
+            print("PLease try again.")
             # self.ikreq.seed_mode = 2
-            # self.flag = 1
-
+        return 0
 
 def main():
     ik_class = IK_solver()
 
     #define desired pose
-    rospy.Subscriber('/z_controls/object_pose', Pose, ik_class.callback)
+    rospy.Subscriber('move_to_position', Pose, ik_class.callback)
     rospy.spin()
+
+    while(1):
+        rospy.sleep(0.1)
 
 if __name__ == '__main__':
     main()
