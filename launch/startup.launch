@@ -21,6 +21,7 @@
         </group>
 
         <node name="motion_controller" pkg="me495_baxter_jar" type="motionControl.py" respawn="true" />
+        <node name="gripper_controller" pkg="me495_baxter_jar" type="gripperControl.py" respawn="true" />
         <node name="pose_relay" pkg="me495_baxter_jar" type="relayObjPose.py" respawn="true" />
         <group if="$(eval arg('run_sequence') == true)">
             <node name="director" pkg="me495_baxter_jar" type="sequencer.py" respawn="false" />

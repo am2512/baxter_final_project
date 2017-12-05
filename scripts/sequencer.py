@@ -54,11 +54,11 @@ def main():
     # Initialize Baxter to nominal state
     baxCtrl = _init_baxter.BaxterCtrls()
 
-    baxCtrl.enableBaxter()
-    baxCtrl.cameraSetupHeadLH()
+    baxCtrl.enable_baxter()
+    baxCtrl.camera_setup_head_LH()
 
     # Calibrate each end effector gripper
-    baxCtrl.calibrateGrippers()
+    baxCtrl.calibrate_grippers()
 
     # Display info message communicating initialization
     rospy.loginfo("Baxter initialization complete.")
@@ -69,8 +69,8 @@ def main():
     while (True):
 
         # Move Baxter's arms to home
-        baxCtrl.moveArmToHome('right')
-        baxCtrl.moveArmToHome('left')
+        baxCtrl.move_arm_to_home('right')
+        baxCtrl.move_arm_to_home('left')
 
         ## If sequencer set to AR TRACK MODE, set trigger to update the published pose for an AR tag matching a specific ID value
         ## If sequencer set to COLOR SEGMENT MODE, set trigger to identify the pose of an object matching the material characteristics
@@ -78,6 +78,7 @@ def main():
         # update_obj_pose()
 
         rospy.loginfo("Shiny dice, spinning, spinning...")
+        rospy.sleep(1)
 
         # Update the published position of the lid
         update_obj_pose()
@@ -87,7 +88,9 @@ def main():
 
         # DEBUG
         rospy.loginfo("Sleeping for 3 seconds.")
-        rospy.sleep(rospy.Duration(3))
+        rospy.sleep(3)
+
+        rospy.loginfo("Testing for offset motion to work.")
 
         test = Pose(
                     position = Point(

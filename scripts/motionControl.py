@@ -13,24 +13,24 @@ from me495_baxter_jar.srv import OffsetMove
 from std_srvs.srv import Trigger
 
 
-class motionControl():
+class motionControls():
 
     def __init__(self):
 
         # Publishers and Subscribers
-        self.cur_left_ee_state = rospy.Subscriber('/robot/limb/left/endpoint_state', EndpointState, self.cbSetLeftEEPosition)
-        self.cur_right_ee_state = rospy.Subscriber('/robot/limb/right/endpoint_state', EndpointState, self.cbSetRightEEPosition)
-        self.obj_pose_sub = rospy.Subscriber('object_pose', Pose, self.cbSetTagPosition)
+        rospy.Subscriber('/robot/limb/left/endpoint_state', EndpointState, self.cb_set_left_ee_position)
+        rospy.Subscriber('/robot/limb/right/endpoint_state', EndpointState, self.cb_set_right_ee_position)
+        rospy.Subscriber('object_pose', Pose, self.cb_set_tag_position)
 
         # Services
-        self.move_to_AR_tag = rospy.Service('move_to_AR_tag', Trigger, self.svcMoveToARTag)
-        self.move_to_offset_pos = rospy.Service('move_to_offset_pos', OffsetMove, self.svcMoveToOffsetPos)
+        rospy.Service('move_to_AR_tag', Trigger, self.svc_move_to_AR_tag)
+        rospy.Service('move_to_offset_pos', OffsetMove, self.svc_move_to_offset_pos)
 
         # Static configuration variables
         self.limb = 'left'      # Hardcoded for now
 
 
-    def cbSetTagPosition(self, data):
+    def cb_set_tag_position(self, data):
 
         # New values that are obtained from the published object pose
         self.tag_point = data.position
@@ -38,7 +38,7 @@ class motionControl():
         return
 
 
-    def cbSetLeftEEPosition(self, data):
+    def cb_set_left_ee_position(self, data):
 
         # New values obtained from the left end-effector's published pose
         self.left_ee_point = data.pose.position
@@ -47,7 +47,7 @@ class motionControl():
         return
 
 
-    def cbSetRightEEPosition(self, data):
+    def cb_set_right_ee_position(self, data):
 
         # New values obtained from the right end-effector's published pose
         self.right_ee_point = data.pose.position
@@ -56,7 +56,7 @@ class motionControl():
         return
 
 
-    def svcMoveToARTag(self, data):
+    def svc_move_to_AR_tag(self, data):
 
         # Establish connection to specific limb's IKSolver service
         ns = 'ExternalTools/' + self.limb + '/PositionKinematicsNode/IKService'
@@ -127,7 +127,7 @@ class motionControl():
         return (True, "MOTION CTRL - Move to AR pounce point complete.")
 
 
-    def svcMoveToOffsetPos(self, data):
+    def svc_move_to_offset_pos(self, data):
 
         # Establish connection to specific limb's IKSolver service
         ns = 'ExternalTools/' + self.limb + '/PositionKinematicsNode/IKService'
@@ -201,6 +201,8 @@ class motionControl():
 
         return (True, "MOTION CTRL - Move to offset position complete.")
 
+# ========== #
+
 
 def main():
 
@@ -208,10 +210,12 @@ def main():
     rospy.init_node("motion_controller")
 
     # Class initialization
-    motionControl()
+    motionControls()
 
     while not rospy.is_shutdown():
         rospy.spin()
+
+    return
 
     
 if __name__ == '__main__':

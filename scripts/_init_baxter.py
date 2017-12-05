@@ -58,7 +58,7 @@ class BaxterCtrls():
         }
 
 
-    def enableBaxter(self):
+    def enable_baxter(self):
 
         # Print Info message detailing that Baxter is now enabled (unless there are other issues)
         rospy.loginfo("Issuing 'Enable' command to Baxter.")
@@ -73,7 +73,7 @@ class BaxterCtrls():
         return
 
 
-    def disableBaxter(self):
+    def disable_baxter(self):
 
         # Print Info message detailing that Baxter is now disabled
         rospy.loginfo("Issuing 'Disable' command to Baxter.")
@@ -88,7 +88,7 @@ class BaxterCtrls():
         return
 
 
-    def calibrateGrippers(self):
+    def calibrate_grippers(self):
 
         # Loop through available grippers and calibrate each
         for side in ['right', 'left']:
@@ -99,7 +99,7 @@ class BaxterCtrls():
         return
 
 
-    def cameraSetupHeadLH(self):
+    def camera_setup_head_LH(self):
 
         # Print Info message describing Camera actions
         rospy.loginfo("Enabling 'head' and 'left_hand' cameras w/ output image resolution of 1280x800.")
@@ -121,7 +121,7 @@ class BaxterCtrls():
         return
 
 
-    def moveArmToHome(self, limb):
+    def move_arm_to_home(self, limb):
 
         # Set up IK Solver service connection
         ns = 'ExternalTools/' + limb + '/PositionKinematicsNode/IKService'
@@ -171,7 +171,7 @@ class BaxterCtrls():
         return
 
 
-    def setScreenImage(self):
+    def set_screen_image(self):
 
         # EMPTY FOR NOW - ADD FOR BELLS AND WHISTLES
 

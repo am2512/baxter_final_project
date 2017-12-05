@@ -14,11 +14,11 @@ class poseHandler():
     def __init__(self):
 
         # Publishers and Subscribers
-        self.pose_sub = rospy.Subscriber('ar_pose_marker', AlvarMarkers, self.cbRegisterObjPose)
+        self.pose_sub = rospy.Subscriber('ar_pose_marker', AlvarMarkers, self.cb_register_obj_pose)
         self.obj_pose = rospy.Publisher('object_pose', Pose, queue_size = 1)
 
         # Services
-        self.update_obj_pose = rospy.Service('update_obj_pose', Trigger, self.srvUpdatePublishedPose)
+        self.update_obj_pose = rospy.Service('update_obj_pose', Trigger, self.svc_update_published_pose)
 
         # Static configuration variables
         self.update_rate = rospy.Rate(5)
@@ -28,7 +28,7 @@ class poseHandler():
         self.pub_obj_pose = []
 
 
-    def cbRegisterObjPose(self, data):
+    def cb_register_obj_pose(self, data):
 
         if (data.markers == []):
             pass
@@ -38,7 +38,7 @@ class poseHandler():
         return
 
 
-    def srvUpdatePublishedPose(self, data):
+    def svc_update_published_pose(self, data):
 
         if (self.last_obj_pose == []):
             return (False, "POSE HANDLER - Update Failed. No AR Tags in view.")
@@ -49,6 +49,8 @@ class poseHandler():
                 self.pub_obj_pose.append(self.last_obj_pose[index].pose.pose)
 
             return (True, "POSE HANDLER - Update Complete.")
+
+# ========== #
 
 
 def main():
@@ -68,6 +70,8 @@ def main():
 
         # Publish new pose values at 5 Hz (provided poses have been 'captured')
         pose_relay.update_rate.sleep()
+
+    return
 
 
 if __name__ == '__main__':
