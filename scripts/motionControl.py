@@ -41,8 +41,6 @@ class motionControls():
         self.tag_qz = 0
         self.tag_qw = 0
 
-        # Updated Quaternion values
-
 
     def cb_set_tag_position(self, data):
 

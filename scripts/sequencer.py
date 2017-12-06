@@ -52,7 +52,9 @@ def main():
 
     unscrew_lid = rospy.ServiceProxy('gripper_controller/unscrew_lid', Trigger)
     screw_lid = rospy.ServiceProxy('gripper_controller/screw_lid', Trigger)
-    rospy.wait_for_service('gripper_controller/screw_lid', 3.0)
+    close_grip = rospy.ServiceProxy('gripper_controller/close_grip', Trigger)
+    open_grip = rospy.ServiceProxy('gripper_controller/open_grip', Trigger)
+    rospy.wait_for_service('gripper_controller/open_grip', 3.0)
 
 
     # Initialize Baxter to nominal state
@@ -78,6 +80,7 @@ def main():
 
         # Update the published position of the lid
         update_obj_pose()
+
         rospy.sleep(1)
 
         # Move to the pounce position over the detected AR tag
@@ -87,9 +90,9 @@ def main():
 
         down = Pose(
             position = Point(
-                x = 0.0,
+                x = 0.01,
                 y = 0.0,
-                z = -0.02
+                z = -0.06
             ),
             orientation = Quaternion(
                 x = 0.0,
@@ -126,6 +129,70 @@ def main():
 
         move_offset(up)
         rospy.sleep(1)
+
+        left = Pose(
+            position=Point(
+                x = 0.0,
+                y = 0.30,
+                z = 0.0
+            ),
+            orientation=Quaternion(
+                x = 0.0,
+                y = 0.0,
+                z = 0.0,
+                w = 0.0
+            )
+        )
+
+        move_offset(left)
+        rospy.sleep(1)
+
+        down2 = Pose(
+            position=Point(
+                x = 0.0,
+                y = 0.0,
+                z = -0.40
+            ),
+            orientation = Quaternion(
+                x = 0.0,
+                y = 0.0,
+                z = 0.0,
+                w = 0.0
+            )
+        )
+
+        move_offset(down2)
+        rospy.sleep(1)
+
+        open_grip()
+        rospy.sleep(1)
+
+        up2 = Pose(
+            position = Point(
+                x = 0.0,
+                y = 0.0,
+                z = 0.30
+            ),
+            orientation = Quaternion(
+                x = 0.0,
+                y = 0.0,
+                z = 0.0,
+                w = 0.0
+            )
+        )
+
+        move_offset(up2)
+        rospy.sleep(1)
+
+        update_obj_pose()
+        rospy.sleep(1)
+
+        move_AR_tag()
+        rospy.sleep(1)
+
+        move_offset(down)
+
+        close_grip()
 
         rospy.loginfo("End of Line")
 

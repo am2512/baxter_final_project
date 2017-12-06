@@ -30,6 +30,9 @@ class gripperControls():
         self.svc_unscrew = rospy.Service('gripper_controller/unscrew_lid', Trigger, self.srv_opening_sequence)
         self.svc_screw = rospy.Service('gripper_controller/screw_lid', Trigger, self.srv_closing_sequence)
 
+        self.svc_close_grip = rospy.Service('gripper_controller/close_grip', Trigger, self.srv_close_grip)
+        self.svc_open_grip = rospy.Service('gripper_controller/open_grip', Trigger, self.srv_open_grip)
+
         # Class-specific variables
         self.distance = 0
         self.current_states = JointState()
@@ -49,25 +52,39 @@ class gripperControls():
         return
 
 
+    def srv_open_grip(self, data):
+
+        self.left_gripper.open()
+
+        return (True, "GRIP - Gripper Open.")
+
+
+    def srv_close_grip(self, data):
+
+        self.left_gripper.close()
+
+        return (True, "GRIP - Gripper Closed.")
+
+
     def srv_opening_sequence(self, data):
 
         # Resetting 'left_w2' and 'left_gripper' position
         self.left_gripper.open()
-        self.left_arm.move_to_joint_positions({self.left_wrist: math.pi/2})
+        self.left_arm.move_to_joint_positions({self.left_wrist: 3})
         rospy.sleep(1)
 
         # Basic opening sequence
         self.left_gripper.close()
         rospy.sleep(1)
-        self.left_arm.move_to_joint_positions({self.left_wrist: -math.pi / 2})
-        rospy.sleep(1)
-        self.left_gripper.open()
-        rospy.sleep(1)
-        self.left_arm.move_to_joint_positions({self.left_wrist: math.pi / 2})
-        rospy.sleep(1)
-        self.left_gripper.close()
-        rospy.sleep(1)
-        self.left_arm.move_to_joint_positions({self.left_wrist: -math.pi / 2})
+        self.left_arm.move_to_joint_positions({self.left_wrist: -3})
+        #rospy.sleep(1)
+        #self.left_gripper.open()
+        #rospy.sleep(1)
+        #self.left_arm.move_to_joint_positions({self.left_wrist: math.pi})
+        #rospy.sleep(1)
+        #self.left_gripper.close()
+        #rospy.sleep(1)
+        #self.left_arm.move_to_joint_positions({self.left_wrist: -math.pi})
         rospy.sleep(1)
 
         return (True, "GRIP - Opening Sequence Complete.")
@@ -80,6 +97,14 @@ class gripperControls():
         rospy.sleep(1)
 
         # Basic opening sequence
+        self.left_gripper.close()
+        rospy.sleep(1)
+        self.left_arm.move_to_joint_positions({self.left_wrist: math.pi / 2})
+        rospy.sleep(1)
+        self.left_gripper.open()
+        rospy.sleep(1)
+        self.left_arm.move_to_joint_positions({self.left_wrist: -math.pi / 2})
+        rospy.sleep(1)
         self.left_gripper.close()
         rospy.sleep(1)
         self.left_arm.move_to_joint_positions({self.left_wrist: math.pi / 2})
