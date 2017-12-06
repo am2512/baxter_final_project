@@ -3,6 +3,8 @@
 
 import rospy
 import baxter_interface
+import math
+import tf
 
 from baxter_core_msgs.msg import EndpointState
 from geometry_msgs.msg import (Point, Pose, PoseStamped, Quaternion)
@@ -18,22 +20,41 @@ class motionControls():
     def __init__(self):
 
         # Publishers and Subscribers
-        rospy.Subscriber('/robot/limb/left/endpoint_state', EndpointState, self.cb_set_left_ee_position)
-        rospy.Subscriber('/robot/limb/right/endpoint_state', EndpointState, self.cb_set_right_ee_position)
-        rospy.Subscriber('object_pose', Pose, self.cb_set_tag_position)
+        self.left_ee_sub = rospy.Subscriber('/robot/limb/left/endpoint_state', EndpointState, self.cb_set_left_ee_position)
+        self.right_ee_sub = rospy.Subscriber('/robot/limb/right/endpoint_state', EndpointState, self.cb_set_right_ee_position)
+        self.obj_pose_sub = rospy.Subscriber('object_pose', Pose, self.cb_set_tag_position)
 
         # Services
-        rospy.Service('motion_controller/move_to_AR_tag', Trigger, self.svc_move_to_AR_tag)
-        rospy.Service('motion_controller/move_to_offset_pos', OffsetMove, self.svc_move_to_offset_pos)
+        self.move_AR_svc = rospy.Service('motion_controller/move_to_AR_tag', Trigger, self.svc_move_to_AR_tag)
+        self.move_offset_svc = rospy.Service('motion_controller/move_to_offset_pos', OffsetMove, self.svc_move_to_offset_pos)
 
         # Static configuration variables
         self.limb = 'left'      # Hardcoded for now
+
+        # Class variables for later use
+        self.tag_x = 0
+        self.tag_y = 0
+        self.tag_z = 0
+
+        self.tag_qx = 0
+        self.tag_qy = 0
+        self.tag_qz = 0
+        self.tag_qw = 0
+
+        # Updated Quaternion values
 
 
     def cb_set_tag_position(self, data):
 
         # New values that are obtained from the published object pose
-        self.tag_point = data.position
+        self.tag_x = data.position.x
+        self.tag_y = data.position.y
+        self.tag_z = data.position.z
+
+        self.tag_qx = data.orientation.x
+        self.tag_qy = data.orientation.y
+        self.tag_qz = data.orientation.z
+        self.tag_qw = data.orientation.w
 
         return
 
@@ -59,35 +80,48 @@ class motionControls():
     def svc_move_to_AR_tag(self, data):
 
         # Establish connection to specific limb's IKSolver service
-        ns = 'ExternalTools/' + self.limb + '/PositionKinematicsNode/IKService'
+        ns = '/ExternalTools/' + self.limb + '/PositionKinematicsNode/IKService'
         iksvc = rospy.ServiceProxy(ns, SolvePositionIK)
         ikreq = SolvePositionIKRequest()
 
         # Update header information based on current time and with reference to base frame
         hdr = Header(stamp = rospy.Time.now(), frame_id = 'base')
 
+        # Update orientation of gripper based on rotation of AR tag frame to a frame compatible with Baxter's EE state
+        q_old = [self.tag_qx, self.tag_qy, self.tag_qz, self.tag_qw]
+        q_rot = tf.transformations.quaternion_from_euler(0, math.pi, 0)
+        q_new = tf.transformations.quaternion_multiply(q_rot, q_old)
+
         poses = {
             'left': PoseStamped(
                 header = hdr,
                 pose = Pose(
-                    position = self.tag_point,
-                    orientation = Quaternion(
-                        x = -0.159821886749,
-                        y = 0.984127886766,
-                        z = -0.00293647198525,
-                        w = 0.0770755742012,
+                    position = Point(
+                        x = self.tag_x,
+                        y = self.tag_y,
+                        z = self.tag_z
                     ),
-                ),
+                    orientation = Quaternion(
+                        x = q_new[0],
+                        y = q_new[1],
+                        z = q_new[2],
+                        w = q_new[3]
+                    )
+                )
             ),
             'right': PoseStamped(
                 header = hdr,
                 pose = Pose(
-                    position = self.tag_point,
+                    position = Point(
+                        x = self.tag_x,
+                        y = self.tag_y,
+                        z = self.tag_z
+                    ),
                     orientation = Quaternion(
-                        x = 0.367048116303,
-                        y = 0.885911751787,
-                        z = -0.108908281936,
-                        w = 0.261868353356,
+                        x = q_new[0],
+                        y = q_new[1],
+                        z = q_new[2],
+                        w = q_new[3]
                     )
                 )
             )
@@ -130,7 +164,7 @@ class motionControls():
     def svc_move_to_offset_pos(self, data):
 
         # Establish connection to specific limb's IKSolver service
-        ns = 'ExternalTools/' + self.limb + '/PositionKinematicsNode/IKService'
+        ns = '/ExternalTools/' + self.limb + '/PositionKinematicsNode/IKService'
         iksvc = rospy.ServiceProxy(ns, SolvePositionIK)
         ikreq = SolvePositionIKRequest()
 
@@ -139,30 +173,30 @@ class motionControls():
 
         # Add input offsets to currently stored end-effector positions
         # Left offset
-        left_offset = PoseStamped
+        left_offset = PoseStamped()
         left_offset.header = hdr
 
-        left_offset.pose.position.x = data.position.x + self.left_ee_point.x
-        left_offset.pose.position.y = data.position.y + self.left_ee_point.y
-        left_offset.pose.position.z = data.position.z + self.left_ee_point.z
+        left_offset.pose.position.x = data.offset.position.x + self.left_ee_point.x
+        left_offset.pose.position.y = data.offset.position.y + self.left_ee_point.y
+        left_offset.pose.position.z = data.offset.position.z + self.left_ee_point.z
 
-        left_offset.pose.orientation.x = data.orientation.x + self.left_ee_orientation.x
-        left_offset.pose.orientation.y = data.orientation.y + self.left_ee_orientation.y
-        left_offset.pose.orientation.z = data.orientation.z + self.left_ee_orientation.z
-        left_offset.pose.orientation.w = data.orientation.w + self.left_ee_orientation.w
+        left_offset.pose.orientation.x = data.offset.orientation.x + self.left_ee_orientation.x
+        left_offset.pose.orientation.y = data.offset.orientation.y + self.left_ee_orientation.y
+        left_offset.pose.orientation.z = data.offset.orientation.z + self.left_ee_orientation.z
+        left_offset.pose.orientation.w = data.offset.orientation.w + self.left_ee_orientation.w
 
         # Right offset
-        right_offset = PoseStamped
+        right_offset = PoseStamped()
         right_offset.header = hdr
 
-        right_offset.pose.position.x = data.position.x + self.right_ee_point.x
-        right_offset.pose.position.y = data.position.y + self.right_ee_point.y
-        right_offset.pose.position.z = data.position.z + self.right_ee_point.z
+        right_offset.pose.position.x = data.offset.position.x + self.right_ee_point.x
+        right_offset.pose.position.y = data.offset.position.y + self.right_ee_point.y
+        right_offset.pose.position.z = data.offset.position.z + self.right_ee_point.z
 
-        right_offset.pose.orientation.x = data.orientation.x + self.right_ee_orientation.x
-        right_offset.pose.orientation.y = data.orientation.y + self.right_ee_orientation.y
-        right_offset.pose.orientation.z = data.orientation.z + self.right_ee_orientation.z
-        right_offset.pose.orientation.w = data.orientation.w + self.right_ee_orientation.w
+        right_offset.pose.orientation.x = data.offset.orientation.x + self.right_ee_orientation.x
+        right_offset.pose.orientation.y = data.offset.orientation.y + self.right_ee_orientation.y
+        right_offset.pose.orientation.z = data.offset.orientation.z + self.right_ee_orientation.z
+        right_offset.pose.orientation.w = data.offset.orientation.w + self.right_ee_orientation.w
 
 
         poses = { 'left' : left_offset,
@@ -207,7 +241,7 @@ class motionControls():
 def main():
 
     # Node initialization
-    rospy.init_node("motion_controller")
+    rospy.init_node('motion_controller')
 
     # Class initialization
     motionControls()

@@ -124,7 +124,7 @@ class BaxterCtrls():
     def move_arm_to_home(self, limb):
 
         # Set up IK Solver service connection
-        ns = 'ExternalTools/' + limb + '/PositionKinematicsNode/IKService'
+        ns = '/ExternalTools/' + limb + '/PositionKinematicsNode/IKService'
         iksvc = rospy.ServiceProxy(ns, SolvePositionIK)
         ikreq = SolvePositionIKRequest()
 

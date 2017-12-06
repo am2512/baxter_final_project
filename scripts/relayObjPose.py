@@ -41,6 +41,7 @@ class poseHandler():
     def svc_update_published_pose(self, data):
 
         if (self.last_obj_pose == []):
+            rospy.loginfo("POSE HANDLER - Update Failed. No AR Tags in view.")
             return (False, "POSE HANDLER - Update Failed. No AR Tags in view.")
         else:
             self.pub_obj_pose = []
@@ -48,6 +49,7 @@ class poseHandler():
             for index in range(len(self.last_obj_pose)):
                 self.pub_obj_pose.append(self.last_obj_pose[index].pose.pose)
 
+            rospy.loginfo("POSE HANDLER - Update Complete.")
             return (True, "POSE HANDLER - Update Complete.")
 
 # ========== #

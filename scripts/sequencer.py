@@ -46,6 +46,7 @@ def main():
     rospy.wait_for_service('pose_relay/update_obj_pose', 3.0)
 
     move_AR_tag = rospy.ServiceProxy('motion_controller/move_to_AR_tag', Trigger)
+    rospy.wait_for_service('motion_controller/move_to_AR_tag', 3.0)
     move_offset = rospy.ServiceProxy('motion_controller/move_to_offset_pos', OffsetMove)
     rospy.wait_for_service('motion_controller/move_to_offset_pos', 3.0)
 
@@ -60,7 +61,7 @@ def main():
     baxCtrl.enable_baxter()
     baxCtrl.camera_setup_head_LH()
 
-    # Calibrate each end effector gripper
+    ## Calibrate each end effector gripper
     baxCtrl.calibrate_grippers()
 
     # Display info message communicating initialization
@@ -71,54 +72,62 @@ def main():
     ##################
     while (True):
 
-        # Move Baxter's arms to home
-        baxCtrl.move_arm_to_home('right')
+        ## Move Baxter's arms to home
+        #baxCtrl.move_arm_to_home('right')
         baxCtrl.move_arm_to_home('left')
-
-        ## If sequencer set to AR TRACK MODE, set trigger to update the published pose for an AR tag matching a specific ID value
-        ## If sequencer set to COLOR SEGMENT MODE, set trigger to identify the pose of an object matching the material characteristics
-        ##   of target object(s)
-        # update_obj_pose()
-
-        rospy.loginfo("Shiny dice, spinning, spinning...")
-        rospy.sleep(1)
 
         # Update the published position of the lid
         update_obj_pose()
+        rospy.sleep(1)
 
         # Move to the pounce position over the detected AR tag
         move_AR_tag()
 
-        # DEBUG
-        rospy.loginfo("Sleeping for 3 seconds.")
-        rospy.sleep(3)
+        rospy.loginfo("Offset Motion")
 
-        rospy.loginfo("Testing for offset motion to work.")
+        down = Pose(
+            position = Point(
+                x = 0.0,
+                y = 0.0,
+                z = -0.02
+            ),
+            orientation = Quaternion(
+                x = 0.0,
+                y = 0.0,
+                z = 0.0,
+                w = 0.0
+            )
+        )
 
-        test = Pose(
-                    position = Point(
-                        x = 0.0,
-                        y = 0.0,
-                        z = 0.05
-                    ),
-                    orientation = Quaternion(
-                        x = 0.0,
-                        y = 0.0,
-                        z = 0.0,
-                        w = 0.0
-                    )
-               )
+        # Offset move down to the lid
+        move_offset(down)
+        rospy.sleep(1)
 
-        print test
+        rospy.loginfo("Unscrewing Motion")
 
-        move_offset(test)
+        unscrew_lid()
+        rospy.sleep(1)
 
-        rospy.loginfo("Offset move complete.")
-        # END DEBUG
+        rospy.loginfo("Offset Motion")
 
-        # DEBUG
+        up = Pose(
+            position = Point(
+                x = 0.0,
+                y = 0.0,
+                z = 0.20
+            ),
+            orientation = Quaternion(
+                x = 0.0,
+                y = 0.0,
+                z = 0.0,
+                w = 0.0
+            )
+        )
+
+        move_offset(up)
+        rospy.sleep(1)
+
         rospy.loginfo("End of Line")
-        # END DEBUG
 
         break
 
