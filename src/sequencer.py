@@ -83,12 +83,13 @@ def main():
 
         # Update the published position of the lid
         update_obj_pose()
-        copy_bottle_ar()
+        
 
         rospy.sleep(1)
 
         # Move to the pounce position over the detected AR tag
         move_AR_tag()
+        copy_bottle_ar()
 
         rospy.loginfo("Offset Motion")
 
@@ -203,7 +204,11 @@ def main():
 
         move_to_bottle()
         rospy.sleep(1)
-        
+
+        move_offset(down)
+        rospy.sleep(1)
+
+        screw_lid()
 
         rospy.loginfo("End of Line")
 

@@ -24,6 +24,8 @@ class motionControls():
         self.right_ee_sub = rospy.Subscriber('/robot/limb/right/endpoint_state', EndpointState, self.cb_set_right_ee_position)
         self.obj_pose_sub = rospy.Subscriber('object_pose', Pose, self.cb_set_tag_position)
 
+        #self.copy = rospy.Subscriber('/robot/limb/left/endpoint_state', EndpointState, self.copy_bottle)
+
 
         # Services
         self.move_AR_svc = rospy.Service('motion_controller/move_to_AR_tag', Trigger, self.svc_move_to_AR_tag)
@@ -114,6 +116,7 @@ class motionControls():
                         x = self.tag_x,
                         y = self.tag_y,
                         z = self.tag_z
+
                     ),
                     orientation = Quaternion(
                         x = q_new[0],
@@ -182,9 +185,9 @@ class motionControls():
             bq_rot = tf.transformations.quaternion_from_euler(0, math.pi, 0)
             bq_new = tf.transformations.quaternion_multiply(bq_rot, bq_old)
 
-            self.bottle_x = self.tag_qx
-            self.bottle_y = self.tag_qy
-            self.bottle_z = self.tag_qz
+            self.bottle_x = self.tag_x
+            self.bottle_y = self.tag_y
+            self.bottle_z = self.tag_z
 
             self.bottle_qx = bq_new[0]
             self.bottle_qy = bq_new[1]
@@ -192,7 +195,13 @@ class motionControls():
             self.bottle_qw = bq_new[3]
 
             print self.bottle_x
+            print self.tag_x
+            print self.bottle_y
+            print self.tag_y
             print self.bottle_qw
+            print self.bottle_qz
+            print bq_new[3]
+            
 
 
 
@@ -202,6 +211,34 @@ class motionControls():
         except (rospy.ServiceException, rospy.ROSException), e:
             rospy.logerr("COPY BOTTLE AR - Service call failed: %s" % (e,))
             return (False, "Unknown exception occurred.")
+
+    # def sub_copy_bottle(self,data):
+    #     try:
+
+    #         bq_old = [self.tag_qx, self.tag_qy, self.tag_qz, self.tag_qw]
+    #         bq_rot = tf.transformations.quaternion_from_euler(0, math.pi, 0)
+    #         bq_new = tf.transformations.quaternion_multiply(bq_rot, bq_old)
+
+    #         self.bottle_x = self.tag_qx
+    #         self.bottle_y = self.tag_qy
+    #         self.bottle_z = self.tag_qz
+
+    #         self.bottle_qx = bq_new[0]
+    #         self.bottle_qy = bq_new[1]
+    #         self.bottle_qz = bq_new[2]
+    #         self.bottle_qw = bq_new[3]
+
+    #         print self.bottle_x
+    #         print self.bottle_qw
+
+
+
+    #         rospy.loginfo("COPY - Success!")
+    #         return (True, " COPY COMPLETE ")
+
+    #     except (rospy.ServiceException, rospy.ROSException), e:
+    #         rospy.logerr("COPY BOTTLE AR - Service call failed: %s" % (e,))
+    #         return (False, "Unknown exception occurred.")
 
 
     def svc_move_to_bottle(self, data):
