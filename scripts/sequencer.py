@@ -10,9 +10,31 @@ from geometry_msgs.msg import (Point, Pose, PoseStamped, Quaternion)
 from me495_baxter_jar.srv import OffsetMove
 from std_srvs.srv import Trigger
 
+import sys
+
+def wait_key():
+    ''' Wait for a key press on the console and return it. '''
+    result = None
+
+    import termios
+    fd = sys.stdin.fileno()
+
+    oldterm = termios.tcgetattr(fd)
+    newattr = termios.tcgetattr(fd)
+    newattr[3] = newattr[3] & ~termios.ICANON & ~termios.ECHO
+    termios.tcsetattr(fd, termios.TCSANOW, newattr)
+
+    try:
+        result = sys.stdin.read(1)
+    except IOError:
+        pass
+    finally:
+        termios.tcsetattr(fd, termios.TCSAFLUSH, oldterm)
+
+    return result
 
 def main():
-    
+
     '''
     ### BASELINE PLAN ###
     # Initialize code
@@ -55,6 +77,9 @@ def main():
     close_grip = rospy.ServiceProxy('gripper_controller/close_grip', Trigger)
     open_grip = rospy.ServiceProxy('gripper_controller/open_grip', Trigger)
     rospy.wait_for_service('gripper_controller/open_grip', 3.0)
+    move_to_bottle = rospy.ServiceProxy('motion_controller/move_to_bottle', Trigger)
+    store_AR_pose = rospy.ServiceProxy('motion_controller/store_bottle_ar', Trigger)
+
 
 
     # Initialize Baxter to nominal state
@@ -74,20 +99,6 @@ def main():
     ##################
     while (True):
 
-        ## Move Baxter's arms to home
-        #baxCtrl.move_arm_to_home('right')
-        baxCtrl.move_arm_to_home('left')
-
-        # Update the published position of the lid
-        update_obj_pose()
-
-        rospy.sleep(1)
-
-        # Move to the pounce position over the detected AR tag
-        move_AR_tag()
-
-        rospy.loginfo("Offset Motion")
-
         down = Pose(
             position = Point(
                 x = 0.01,
@@ -101,17 +112,6 @@ def main():
                 w = 0.0
             )
         )
-
-        # Offset move down to the lid
-        move_offset(down)
-        rospy.sleep(1)
-
-        rospy.loginfo("Unscrewing Motion")
-
-        unscrew_lid()
-        rospy.sleep(1)
-
-        rospy.loginfo("Offset Motion")
 
         up = Pose(
             position = Point(
@@ -127,9 +127,6 @@ def main():
             )
         )
 
-        move_offset(up)
-        rospy.sleep(1)
-
         left = Pose(
             position=Point(
                 x = 0.0,
@@ -143,29 +140,6 @@ def main():
                 w = 0.0
             )
         )
-
-        move_offset(left)
-        rospy.sleep(1)
-
-        down2 = Pose(
-            position=Point(
-                x = 0.0,
-                y = 0.0,
-                z = -0.40
-            ),
-            orientation = Quaternion(
-                x = 0.0,
-                y = 0.0,
-                z = 0.0,
-                w = 0.0
-            )
-        )
-
-        move_offset(down2)
-        rospy.sleep(1)
-
-        open_grip()
-        rospy.sleep(1)
 
         up2 = Pose(
             position = Point(
@@ -181,8 +155,69 @@ def main():
             )
         )
 
+        down2 = Pose(
+            position=Point(
+                x = 0.0,
+                y = 0.0,
+                z = -0.40
+            ),
+            orientation = Quaternion(
+                x = 0.0,
+                y = 0.0,
+                z = 0.0,
+                w = 0.0
+            )
+        )
+
+        # Move Baxter's arms to home
+        baxCtrl.move_arm_to_home('left')
+
+        rospy.loginfo("Press ENTER to START.")
+        wait_key()
+
+        # Update the published position of the lid
+        update_obj_pose()
+        rospy.sleep(1)
+
+        # Move to the pounce position over the detected AR tag
+        move_AR_tag()
+        store_AR_pose()
+
+        rospy.loginfo("Press ENTER to lower and start unscrewing.")
+        wait_key()
+
+        # Offset move down to the lid
+        move_offset(down)
+        rospy.sleep(1)
+
+        unscrew_lid()
+        rospy.sleep(1)
+
+        rospy.loginfo("Press ENTER to start move up.")
+        wait_key()
+
+        move_offset(up)
+        rospy.sleep(1)
+
+        move_offset(left)
+        rospy.sleep(1)
+
+        move_offset(down2)
+        rospy.sleep(1)
+
+        rospy.loginfo("Press ENTER to drop cup.")
+        wait_key()
+
+        open_grip()
+        rospy.sleep(1)
+
         move_offset(up2)
         rospy.sleep(1)
+
+        baxCtrl.move_arm_to_home('left')
+
+        rospy.loginfo("Press ENTER to update location of cup.")
+        wait_key()
 
         update_obj_pose()
         rospy.sleep(1)
@@ -191,12 +226,31 @@ def main():
         rospy.sleep(1)
 
         move_offset(down)
+        rospy.sleep(2)
 
         close_grip()
 
-        rospy.loginfo("End of Line")
+        move_offset(up2)
+        rospy.sleep(1)
+        move_to_bottle()
+        rospy.sleep(1)
 
-        break
+        rospy.loginfo("Press ENTER to lower.")
+        wait_key()
+
+        move_offset(down)
+        rospy.sleep(1)
+
+        screw_lid()
+
+        rospy.loginfo("Press ENTER to be done.")
+        wait_key()
+
+        open_grip()
+        move_offset(up2)
+        rospy.sleep(1)
+
+        rospy.loginfo("I'm done. ")
 
     return
 

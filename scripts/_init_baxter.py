@@ -91,7 +91,7 @@ class BaxterCtrls():
     def calibrate_grippers(self):
 
         # Loop through available grippers and calibrate each
-        for side in ['right', 'left']:
+        for side in ['left']: #'right'
             rospy.loginfo("Calibrating " + side + " gripper.")
             side = baxter_interface.Gripper(side)
             side.calibrate()

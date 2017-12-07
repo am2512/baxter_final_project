@@ -6,6 +6,8 @@
     <arg name="max_new_marker_error" default="0.08" />
     <arg name="max_track_error" default="0.2" />
 
+    <arg name="run_AR_tracker" default="true" />
+    <arg name="run_sequence" default="true" />
 
     <group>
         <group if="$(eval arg('run_AR_tracker') == true)">

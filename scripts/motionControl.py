@@ -24,9 +24,14 @@ class motionControls():
         self.right_ee_sub = rospy.Subscriber('/robot/limb/right/endpoint_state', EndpointState, self.cb_set_right_ee_position)
         self.obj_pose_sub = rospy.Subscriber('object_pose', Pose, self.cb_set_tag_position)
 
+        #self.copy = rospy.Subscriber('/robot/limb/left/endpoint_state', EndpointState, self.copy_bottle)
+
+
         # Services
         self.move_AR_svc = rospy.Service('motion_controller/move_to_AR_tag', Trigger, self.svc_move_to_AR_tag)
         self.move_offset_svc = rospy.Service('motion_controller/move_to_offset_pos', OffsetMove, self.svc_move_to_offset_pos)
+        self.move_to_bottle_svc = rospy.Service('motion_controller/move_to_bottle', Trigger, self.svc_move_to_bottle)
+        self.store_bottle_ar_svc = rospy.Service('motion_controller/store_bottle_ar', Trigger, self.svc_copy_bottle_ar)
 
         # Static configuration variables
         self.limb = 'left'      # Hardcoded for now
@@ -40,6 +45,17 @@ class motionControls():
         self.tag_qy = 0
         self.tag_qz = 0
         self.tag_qw = 0
+
+        self.bottle_x = 0
+        self.bottle_y = 0
+        self.bottle_z = 0
+
+        self.bottle_qx = 0
+        self.bottle_qy = 0
+        self.bottle_qz = 0
+        self.bottle_qw = 0
+
+
 
 
     def cb_set_tag_position(self, data):
@@ -90,6 +106,8 @@ class motionControls():
         q_rot = tf.transformations.quaternion_from_euler(0, math.pi, 0)
         q_new = tf.transformations.quaternion_multiply(q_rot, q_old)
 
+
+
         poses = {
             'left': PoseStamped(
                 header = hdr,
@@ -98,6 +116,7 @@ class motionControls():
                         x = self.tag_x,
                         y = self.tag_y,
                         z = self.tag_z
+
                     ),
                     orientation = Quaternion(
                         x = q_new[0],
@@ -157,6 +176,113 @@ class motionControls():
             rospy.loginfo("IK SOLVER - Invalid pose - No valid joint solution found.")
 
         return (True, "MOTION CTRL - Move to AR pounce point complete.")
+
+
+    def svc_copy_bottle_ar(self,data):
+        try:
+
+            bq_old = [self.tag_qx, self.tag_qy, self.tag_qz, self.tag_qw]
+            bq_rot = tf.transformations.quaternion_from_euler(0, math.pi, 0)
+            bq_new = tf.transformations.quaternion_multiply(bq_rot, bq_old)
+
+            self.bottle_x = self.tag_x
+            self.bottle_y = self.tag_y
+            self.bottle_z = self.tag_z
+
+            self.bottle_qx = bq_new[0]
+            self.bottle_qy = bq_new[1]
+            self.bottle_qz = bq_new[2]
+            self.bottle_qw = bq_new[3]
+
+
+            rospy.loginfo("COPY - Success!")
+            return (True, " COPY COMPLETE ")
+
+        except (rospy.ServiceException, rospy.ROSException), e:
+            rospy.logerr("COPY BOTTLE AR - Service call failed: %s" % (e,))
+            return (False, "Unknown exception occurred.")
+
+
+    def svc_move_to_bottle(self, data):
+
+        # Establish connection to specific limb's IKSolver service
+        ns = '/ExternalTools/' + self.limb + '/PositionKinematicsNode/IKService'
+        iksvc = rospy.ServiceProxy(ns, SolvePositionIK)
+        ikreq = SolvePositionIKRequest()
+
+        # Update header information based on current time and with reference to base frame
+        hdr = Header(stamp = rospy.Time.now(), frame_id = 'base')
+
+        # Update orientation of gripper based on rotation of AR tag frame to a frame compatible with Baxter's EE state
+
+        poses = {
+            'left': PoseStamped(
+                header = hdr,
+                pose = Pose(
+                    position = Point(
+                        x = self.bottle_x,
+                        y = self.bottle_y,
+                        z = self.bottle_z
+                    ),
+                    orientation = Quaternion(
+                        x = self.bottle_qx,
+                        y = self.bottle_qy,
+                        z = self.bottle_qz,
+                        w = self.bottle_qz
+                    )
+                )
+            ),
+            'right': PoseStamped(
+                header = hdr,
+                pose = Pose(
+                    position = Point(
+                        x = self.tag_x,
+                        y = self.tag_y,
+                        z = self.tag_z
+                    ),
+                    orientation = Quaternion(
+                        x = self.bottle_qx,
+                        y = self.bottle_qy,
+                        z = self.bottle_qz,
+                        w = self.bottle_qz
+                    )
+                )
+            )
+        }
+
+        # Set the desired pose in the service request message to pose information pulled from the object pose topic
+        ikreq.pose_stamp.append(poses[self.limb])
+
+        try:
+            rospy.wait_for_service(ns, 5.0)
+            resp = iksvc(ikreq)
+        except (rospy.ServiceException, rospy.ROSException), e:
+            rospy.logerr("MOTION CTRL - Service call failed: %s" % (e,))
+            return (False, "Unknown exception occurred.")
+
+        if (resp.isValid[0]):
+            rospy.loginfo("IK SOLVER - Success! Valid joint solution found.")
+
+            # Format solution into Limb API-compatible dictionary
+            limb_joints = dict(zip(resp.joints[0].name, resp.joints[0].position))
+
+            # Print Info message to alert users of impending motion
+            rospy.loginfo("MOTION CTRL - WARNING! Moving Baxter's " + self.limb + " arm to pounce position.")
+
+            if (self.limb == 'left'):
+                left = baxter_interface.Limb('left')
+                left.move_to_joint_positions(limb_joints)
+            elif (self.limb == 'right'):
+                right = baxter_interface.Limb('right')
+                right.move_to_joint_positions(limb_joints)
+
+            else:
+                pass
+        else:
+            rospy.loginfo("IK SOLVER - Invalid pose - No valid joint solution found.")
+
+        return (True, "MOTION CTRL - Move to AR pounce point complete.")
+
 
 
     def svc_move_to_offset_pos(self, data):
@@ -249,7 +375,7 @@ def main():
 
     return
 
-    
+
 if __name__ == '__main__':
     try:
         main()
