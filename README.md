@@ -4,7 +4,7 @@
 
 ## Overview of project
 
-This package (package name: me495_baxter_jar) allows Baxter to open and close a Tide bottle.
+This package (package name: me495_baxter_jar) allows Baxter to open and close a Tide bottle, using his left arm.
 
 [photo of setup]
 
@@ -53,4 +53,4 @@ Key steps:
 
 1. **ar_track_alvar** - a ROS wrapper for Alvar, an open-source AR-tag-tracking library.
 
-2.
+2. is there more?
