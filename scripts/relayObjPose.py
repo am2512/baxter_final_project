@@ -14,10 +14,10 @@ class poseHandler():
     def __init__(self):
 
         # Publishers and Subscribers
-        self.pose_sub = rospy.Subscriber('ar_pose_marker', AlvarMarkers, self.cb_register_obj_pose)
-        self.obj_pose = rospy.Publisher('object_pose', Pose, queue_size = 1)
+        rospy.Subscriber('ar_pose_marker', AlvarMarkers, self.cb_register_obj_pose)
+        self.object_pose = rospy.Publisher('object_pose', Pose, queue_size = 1)
 
-        # Services
+        # Service Definitions
         self.update_obj_pose = rospy.Service('pose_relay/update_obj_pose', Trigger, self.svc_update_published_pose)
 
         # Static configuration variables
@@ -25,10 +25,14 @@ class poseHandler():
 
         # Variables for latest subscribed poses and actively published poses
         self.last_obj_pose = []
-        self.pub_obj_pose = []
+        self.static_obj_pose = []
 
 
     def cb_register_obj_pose(self, data):
+        '''
+        This callback function reads the last set of markers data passed across the "ar_pose_marker" topic and stores
+        the last marker(s) to be read.
+        '''
 
         if (data.markers == []):
             pass
@@ -39,17 +43,21 @@ class poseHandler():
 
 
     def svc_update_published_pose(self, data):
+        '''
+        This service acts on a trigger from the sequencer to update the static object pose being broadcast across the
+        "object_pose" topic. Ideally, this 'locks' the marker position and orientation information to an unchanging
+        value for stability purposes. This service can be triggered at any time.
+        '''
 
         if (self.last_obj_pose == []):
-            rospy.loginfo("POSE HANDLER - Update Failed. No AR Tags in view.")
             return (False, "POSE HANDLER - Update Failed. No AR Tags in view.")
         else:
-            self.pub_obj_pose = []
+            # Clear out old pose information before storing new poses
+            self.static_obj_pose = []
 
             for index in range(len(self.last_obj_pose)):
-                self.pub_obj_pose.append(self.last_obj_pose[index].pose.pose)
+                self.static_obj_pose.append(self.last_obj_pose[index].pose.pose)
 
-            rospy.loginfo("POSE HANDLER - Update Complete.")
             return (True, "POSE HANDLER - Update Complete.")
 
 # ========== #
@@ -64,9 +72,9 @@ def main():
     pose_relay = poseHandler()
 
     while not rospy.is_shutdown():
-        if len(pose_relay.pub_obj_pose) != 0:
-            for tag in range(len(pose_relay.pub_obj_pose)):
-                pose_relay.obj_pose.publish(pose_relay.pub_obj_pose[tag])
+        if len(pose_relay.static_obj_pose) != 0:
+            for tag in range(len(pose_relay.static_obj_pose)):
+                pose_relay.object_pose.publish(pose_relay.static_obj_pose[tag])
         else:
             pass
 

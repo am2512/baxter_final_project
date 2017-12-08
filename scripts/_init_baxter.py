@@ -169,10 +169,3 @@ class BaxterCtrls():
             rospy.loginfo("IK SOLVER - Invalid pose - No valid joint solution found.")
 
         return
-
-
-    def set_screen_image(self):
-
-        # EMPTY FOR NOW - ADD FOR BELLS AND WHISTLES
-
-        return
