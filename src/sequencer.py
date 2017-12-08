@@ -166,6 +166,20 @@ def main():
             )
         )
 
+        down3 = Pose(
+            position=Point(
+                x = 0.005,
+                y = 0.0,
+                z = -0.05
+            ),
+            orientation = Quaternion(
+                x = 0.0,
+                y = 0.0,
+                z = 0.0,
+                w = 0.0
+            )
+        )
+
         move_offset(down2)
         rospy.sleep(1)
 
@@ -176,7 +190,7 @@ def main():
             position = Point(
                 x = 0.0,
                 y = 0.0,
-                z = 0.30
+                z = 0.25
             ),
             orientation = Quaternion(
                 x = 0.0,
@@ -187,7 +201,7 @@ def main():
         )
 
         move_offset(up2)
-        rospy.sleep(1)
+        rospy.sleep(3)
 
         update_obj_pose()
         rospy.sleep(1)
@@ -195,9 +209,11 @@ def main():
         move_AR_tag()
         rospy.sleep(1)
 
-        move_offset(down)
+        move_offset(down3)
+        rospy.sleep(1)
 
         close_grip()
+        rospy.sleep(1)
 
         move_offset(up2)
         rospy.sleep(1)
@@ -209,6 +225,13 @@ def main():
         rospy.sleep(1)
 
         screw_lid()
+        rospy.sleep(1)
+
+        open_grip()
+        rospy.sleep(1)
+
+        move_offset(up2)
+        rospy.sleep(1)
 
         rospy.loginfo("End of Line")
 
