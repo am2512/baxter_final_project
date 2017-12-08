@@ -8,6 +8,7 @@ Panels:
         - /Camera1
         - /Marker1
         - /TF1
+        - /TF1/Frames1
       Splitter Ratio: 0.5
     Tree Height: 775
   - Class: rviz/Selection
@@ -72,7 +73,7 @@ Visualization Manager:
       Marker Topic: /z_ar_trackers/visualization_marker
       Name: Marker
       Namespaces:
-        basic_shapes: true
+        {}
       Queue Size: 10
       Value: true
     - Alpha: 1
@@ -383,259 +384,257 @@ Visualization Manager:
       Enabled: true
       Frame Timeout: 15
       Frames:
-        All Enabled: true
-        ar_marker_5:
-          Value: true
+        All Enabled: false
         base:
-          Value: true
+          Value: false
         collision_head_link_1:
-          Value: true
+          Value: false
         collision_head_link_2:
-          Value: true
+          Value: false
         display:
-          Value: true
+          Value: false
         dummyhead1:
-          Value: true
+          Value: false
         head:
-          Value: true
+          Value: false
         head_camera:
-          Value: true
+          Value: false
         l_gripper_l_finger:
-          Value: true
+          Value: false
         l_gripper_l_finger_tip:
-          Value: true
+          Value: false
         l_gripper_r_finger:
-          Value: true
+          Value: false
         l_gripper_r_finger_tip:
-          Value: true
+          Value: false
         left_arm_itb:
-          Value: true
+          Value: false
         left_arm_mount:
-          Value: true
+          Value: false
         left_gripper:
           Value: true
         left_gripper_base:
-          Value: true
+          Value: false
         left_gripper_mass:
-          Value: true
+          Value: false
         left_gripper_object_mass:
-          Value: true
+          Value: false
         left_hand:
-          Value: true
+          Value: false
         left_hand_accelerometer:
-          Value: true
+          Value: false
         left_hand_camera:
-          Value: true
+          Value: false
         left_hand_camera_axis:
-          Value: true
+          Value: false
         left_hand_range:
-          Value: true
+          Value: false
         left_lower_elbow:
-          Value: true
+          Value: false
         left_lower_forearm:
-          Value: true
+          Value: false
         left_lower_shoulder:
-          Value: true
+          Value: false
         left_torso_itb:
-          Value: true
+          Value: false
         left_upper_elbow:
-          Value: true
+          Value: false
         left_upper_elbow_visual:
-          Value: true
+          Value: false
         left_upper_forearm:
-          Value: true
+          Value: false
         left_upper_forearm_visual:
-          Value: true
+          Value: false
         left_upper_shoulder:
-          Value: true
+          Value: false
         left_wrist:
-          Value: true
+          Value: false
         pedestal:
-          Value: true
+          Value: false
         r_gripper_l_finger:
-          Value: true
+          Value: false
         r_gripper_l_finger_tip:
-          Value: true
+          Value: false
         r_gripper_r_finger:
-          Value: true
+          Value: false
         r_gripper_r_finger_tip:
-          Value: true
+          Value: false
         reference/base:
-          Value: true
+          Value: false
         reference/collision_head_link_1:
-          Value: true
+          Value: false
         reference/collision_head_link_2:
-          Value: true
+          Value: false
         reference/display:
-          Value: true
+          Value: false
         reference/dummyhead1:
-          Value: true
+          Value: false
         reference/head:
-          Value: true
+          Value: false
         reference/head_camera:
-          Value: true
+          Value: false
         reference/l_gripper_l_finger:
-          Value: true
+          Value: false
         reference/l_gripper_l_finger_tip:
-          Value: true
+          Value: false
         reference/l_gripper_r_finger:
-          Value: true
+          Value: false
         reference/l_gripper_r_finger_tip:
-          Value: true
+          Value: false
         reference/left_arm_itb:
-          Value: true
+          Value: false
         reference/left_arm_mount:
-          Value: true
+          Value: false
         reference/left_gripper:
-          Value: true
+          Value: false
         reference/left_gripper_base:
-          Value: true
+          Value: false
         reference/left_gripper_mass:
-          Value: true
+          Value: false
         reference/left_gripper_object_mass:
-          Value: true
+          Value: false
         reference/left_hand:
-          Value: true
+          Value: false
         reference/left_hand_accelerometer:
-          Value: true
+          Value: false
         reference/left_hand_camera:
-          Value: true
+          Value: false
         reference/left_hand_camera_axis:
-          Value: true
+          Value: false
         reference/left_hand_range:
-          Value: true
+          Value: false
         reference/left_lower_elbow:
-          Value: true
+          Value: false
         reference/left_lower_forearm:
-          Value: true
+          Value: false
         reference/left_lower_shoulder:
-          Value: true
+          Value: false
         reference/left_torso_itb:
-          Value: true
+          Value: false
         reference/left_upper_elbow:
-          Value: true
+          Value: false
         reference/left_upper_elbow_visual:
-          Value: true
+          Value: false
         reference/left_upper_forearm:
-          Value: true
+          Value: false
         reference/left_upper_forearm_visual:
-          Value: true
+          Value: false
         reference/left_upper_shoulder:
-          Value: true
+          Value: false
         reference/left_wrist:
-          Value: true
+          Value: false
         reference/pedestal:
-          Value: true
+          Value: false
         reference/r_gripper_l_finger:
-          Value: true
+          Value: false
         reference/r_gripper_l_finger_tip:
-          Value: true
+          Value: false
         reference/r_gripper_r_finger:
-          Value: true
+          Value: false
         reference/r_gripper_r_finger_tip:
-          Value: true
+          Value: false
         reference/right_arm_itb:
-          Value: true
+          Value: false
         reference/right_arm_mount:
-          Value: true
+          Value: false
         reference/right_gripper:
-          Value: true
+          Value: false
         reference/right_gripper_base:
-          Value: true
+          Value: false
         reference/right_gripper_mass:
-          Value: true
+          Value: false
         reference/right_gripper_object_mass:
-          Value: true
+          Value: false
         reference/right_hand:
-          Value: true
+          Value: false
         reference/right_hand_accelerometer:
-          Value: true
+          Value: false
         reference/right_hand_camera:
-          Value: true
+          Value: false
         reference/right_hand_camera_axis:
-          Value: true
+          Value: false
         reference/right_hand_range:
-          Value: true
+          Value: false
         reference/right_lower_elbow:
-          Value: true
+          Value: false
         reference/right_lower_forearm:
-          Value: true
+          Value: false
         reference/right_lower_shoulder:
-          Value: true
+          Value: false
         reference/right_torso_itb:
-          Value: true
+          Value: false
         reference/right_upper_elbow:
-          Value: true
+          Value: false
         reference/right_upper_elbow_visual:
-          Value: true
+          Value: false
         reference/right_upper_forearm:
-          Value: true
+          Value: false
         reference/right_upper_forearm_visual:
-          Value: true
+          Value: false
         reference/right_upper_shoulder:
-          Value: true
+          Value: false
         reference/right_wrist:
-          Value: true
+          Value: false
         reference/screen:
-          Value: true
+          Value: false
         reference/sonar_ring:
-          Value: true
+          Value: false
         reference/torso:
-          Value: true
+          Value: false
         right_arm_itb:
-          Value: true
+          Value: false
         right_arm_mount:
-          Value: true
+          Value: false
         right_gripper:
-          Value: true
+          Value: false
         right_gripper_base:
-          Value: true
+          Value: false
         right_gripper_mass:
-          Value: true
+          Value: false
         right_gripper_object_mass:
-          Value: true
+          Value: false
         right_hand:
-          Value: true
+          Value: false
         right_hand_accelerometer:
-          Value: true
+          Value: false
         right_hand_camera:
-          Value: true
+          Value: false
         right_hand_camera_axis:
-          Value: true
+          Value: false
         right_hand_range:
-          Value: true
+          Value: false
         right_lower_elbow:
-          Value: true
+          Value: false
         right_lower_forearm:
-          Value: true
+          Value: false
         right_lower_shoulder:
-          Value: true
+          Value: false
         right_torso_itb:
-          Value: true
+          Value: false
         right_upper_elbow:
-          Value: true
+          Value: false
         right_upper_elbow_visual:
-          Value: true
+          Value: false
         right_upper_forearm:
-          Value: true
+          Value: false
         right_upper_forearm_visual:
-          Value: true
+          Value: false
         right_upper_shoulder:
-          Value: true
+          Value: false
         right_wrist:
-          Value: true
+          Value: false
         screen:
-          Value: true
+          Value: false
         sonar_ring:
-          Value: true
+          Value: false
         torso:
-          Value: true
+          Value: false
         world:
-          Value: true
+          Value: false
       Marker Scale: 1
       Name: TF
-      Show Arrows: true
-      Show Axes: false
+      Show Arrows: false
+      Show Axes: true
       Show Names: false
       Tree:
         world:
@@ -679,8 +678,7 @@ Visualization Manager:
                                 left_hand_accelerometer:
                                   {}
                                 left_hand_camera:
-                                  ar_marker_5:
-                                    {}
+                                  {}
                                 left_hand_camera_axis:
                                   {}
                                 left_hand_range:
