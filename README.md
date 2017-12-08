@@ -8,7 +8,7 @@ This package (package name: me495_baxter_jar) allows Baxter to open and close a 
 
 ![MarkView](https://github.com/am2512/baxter_final_project/blob/master/images/demo1.png)
 
-## How to run
+## How to run the files
 
 A closed Tide bottle with an AR tag on the cap needs to be firmly attached (duct tape will suffice) to a table well within Baxter's reachable area. Once communication with Baxter is established run command:
 
@@ -24,7 +24,7 @@ The package operates similarly to a state machine. Upon completion of each task,
 
 Key steps:
 
-1. Initiate Baxter:
+1. Initialize Baxter:
 
 This is the initial stage in the sequence of events. Baxter is enabled, grippers are calibrated, and the left hand camera resolution is set to 1280x800.
 
@@ -34,24 +34,47 @@ The left arm moves to position that gives the left hand camera a clear view of t
 
 3. Locate AR tag:
 
+This step uses the `ar_track_alvar` ROS wrapper, to detect AR tags that are fixed onto objects. In this case, there is one AR tag on the top of the Tide bottle lid. The AR tag provides accurate details about the pose and orientation and orientation of the lid. 
+
 4. Move to AR tag and prepare to grip: 
 
 This is done using the pose and orientation data that the AR tag provides. We used the Inverse Kinematics Solver Service to obtain the joint angles for a given pose and orientation. 
 
+The AR tag data at this time is copied and saved so that it can be used later to return to the bottle.
+
 5. Untwist wrist (CW) and unscrew lid (CCW):
+
+In this step, the custom services `open_gripper`, `close_gripper` and `unscrew_lid` are utilised. The service definitions can be found in this [gripperControl.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/gripperControl.py) node. 
 
 6. Retract and move to drop cap on table:
 
+The left arm moves up and then opens its gripper to drop the cap beside the bottle.
+
 7. Go to home position:
+
+The left arm goes back to the home position and waits for an updated position of the lid.
 
 8. Locate AR tag:
 
+The AR tag is located and the pose and orientation are relayed to the IK Solver Service. 
+
 9. Move to AR tag and prepare to grip:
 
-10. Untwist wrist (CCW) and screw in lid (CW):
+The arm moves to the AR tag on the lid, aligns itself and grips the lid.
 
-11. Retract and go to home position:
+10. Move to saved pose of bottle:
 
+The location of the bottle was saved in Step 4. The left arm now moes back to the bottle using this saved pose and orientation data. 
+
+11. Untwist wrist (CCW) and screw in lid (CW):
+
+The `unscrew_lid` and `screw_lid` services are called during this step.
+
+12. Retract and go to home position:
+
+The gripper releases the lid after completing the closing action and moves back to the home position.
+
+Task = Complete!
 
 ## Additional ROS packages required
 
