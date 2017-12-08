@@ -64,7 +64,7 @@ The arm moves to the AR tag on the lid, aligns itself and grips the lid.
 
 **10. Move to saved pose of bottle:**
 
-The location of the bottle was saved in Step 4. The left arm now moes back to the bottle using this saved pose and orientation data. 
+The location of the bottle was saved in Step 4. The left arm now moves back to the bottle using this saved pose and orientation data. 
 
 **11. Untwist wrist (CCW) and screw in lid (CW):**
 
