@@ -30,7 +30,7 @@ Key steps:
 
 **1. Initialize Baxter:**
 
-This is the initial stage in the sequence of events. Baxter is enabled, grippers are calibrated, and the left hand camera resolution is set to 1280x800. The exact code can be found here: [_init_baxter.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/gripperControl.py).
+This is the initial stage in the sequence of events. Baxter is enabled, grippers are calibrated, and the left hand camera resolution is set to 1280x800. The exact code can be found here: [_init_baxter.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/_init_baxter.py).
 
 **2. Go to home position:**
 
