@@ -24,9 +24,7 @@ To visualize Baxter and the AR tag in rviz to monitor what Baxter is seeing, run
 
 ## State machine: nodes, services, and their functionality
 
-The package operates similarly to a state machine. Upon completion of each task, the next one is called using a service. The full sequence of steps is controlled through a master node ([sequencer.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/sequencer.py)).
-
-<h4>Nodes:</h4>
+<h4>List of Nodes:</h4>
 
 1. [_init_baxter.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/_init_baxter.py)
 2. [gripperControl.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/gripperControl.py)
@@ -34,9 +32,7 @@ The package operates similarly to a state machine. Upon completion of each task,
 4. [relayObjPose.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/relayObjPose.py)
 5. [sequencer.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/sequencer.py)
 
-<h4>Services</h4>
-
-
+The package operates similarly to a state machine. Upon completion of each task, the next one is called using a service. The full sequence of steps is controlled through a master node ([sequencer.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/sequencer.py)).
 
 <h4>Key steps:</h4>
 
