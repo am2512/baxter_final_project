@@ -20,13 +20,13 @@ To visualize Baxter and the AR tag in rviz to monitor what Baxter is seeing, run
 
 ## State machine: nodes, services, and their functionality
 
-The package operates similarly to a state machine. Upon completion of each task, the next one is called using a service. The full sequence of steps is controlled through a master node ([sequencer.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/sequencer.py)).
+The package operates similarly to a state machine. Upon completion of each task, the next one is called using a service.
 
 Key steps:
 
 **1. Initialize Baxter:**
 
-This is the initial stage in the sequence of events. Baxter is enabled, grippers are calibrated, and the left hand camera resolution is set to 1280x800. The exact code can be found here: [_init_baxter.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/gripperControl.py).
+This is the initial stage in the sequence of events. Baxter is enabled, grippers are calibrated, and the left hand camera resolution is set to 1280x800.
 
 **2. Go to home position:**
 
@@ -34,11 +34,11 @@ The left arm moves to position that gives the left hand camera a clear view of t
 
 **3. Locate AR tag:**
 
-This step uses the `ar_track_alvar` ROS wrapper, to detect AR tags that are fixed onto objects. In this case, there is one AR tag on the top of the Tide bottle lid. The AR tag provides accurate details about the pose and orientation and orientation of the lid. The service definitions can be found in this [relayObjPose.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/relayObjPose.py) node.
+This step uses the `ar_track_alvar` ROS wrapper, to detect AR tags that are fixed onto objects. In this case, there is one AR tag on the top of the Tide bottle lid. The AR tag provides accurate details about the pose and orientation and orientation of the lid. 
 
 **4. Move to AR tag and prepare to grip:** 
 
-This is done using the pose and orientation data that the AR tag provides. We used the Inverse Kinematics Solver Service to obtain the joint angles for a given pose and orientation. The service definitions that carry out these functions can be found in this [motionControl.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/motionControl.py) node.
+This is done using the pose and orientation data that the AR tag provides. We used the Inverse Kinematics Solver Service to obtain the joint angles for a given pose and orientation. 
 
 The AR tag data at this time is copied and saved so that it can be used later to return to the bottle.
 
@@ -46,7 +46,7 @@ The AR tag data at this time is copied and saved so that it can be used later to
 
 In this step, the custom services `open_gripper`, `close_gripper` and `unscrew_lid` are utilised. The service definitions can be found in this [gripperControl.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/gripperControl.py) node.
 
-![MarkView](https://github.com/am2512/baxter_final_project/blob/master/images/opening_bottle.gif)
+![MarkView](https://github.com/am2512/baxter_final_project/blob/master/images/opening_lid.gif)
 
 **6. Retract and move to drop cap on table:**
 
@@ -84,5 +84,7 @@ Task = Complete!
 
 ## Additional ROS packages required
 
-**ar_track_alvar** - a ROS wrapper for Alvar, an open-source AR-tag-tracking library.s
+1. **ar_track_alvar** - a ROS wrapper for Alvar, an open-source AR-tag-tracking library.
+
+2. is there more?
 
