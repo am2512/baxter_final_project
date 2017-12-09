@@ -38,7 +38,7 @@ This step uses the `ar_track_alvar` ROS wrapper, to detect AR tags that are fixe
 
 **4. Move to AR tag and prepare to grip:** 
 
-This is done using the pose and orientation data that the AR tag provides. We used the Inverse Kinematics Solver Service to obtain the joint angles for a given pose and orientation. The service definitions that carry out these functions can be found in this [motionControl.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/motionControl.py) node.
+This is done using the pose and orientation data that the AR tag provides. We used the Inverse Kinematics Solver Service to obtain the joint angles for a given pose and orientation. We imported `quaternion_from_euler` and `quaternion_multiply` from `tf.transformations`, and used these functions along with the quaternion values of the AR tag to make sure that the gripper was aligned directly above the lid. The service definitions that carry out these functions can be found in this [motionControl.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/motionControl.py) node.
 
 The AR tag data at this time is copied and saved so that it can be used later to return to the bottle.
 
