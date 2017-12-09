@@ -78,7 +78,5 @@ Task = Complete!
 
 ## Additional ROS packages required
 
-1. **ar_track_alvar** - a ROS wrapper for Alvar, an open-source AR-tag-tracking library.
-
-2. is there more?
+**ar_track_alvar** - a ROS wrapper for Alvar, an open-source AR-tag-tracking library.s
 
