@@ -44,7 +44,9 @@ The AR tag data at this time is copied and saved so that it can be used later to
 
 **5. Untwist wrist (CW) and unscrew lid (CCW):**
 
-In this step, the custom services `open_gripper`, `close_gripper` and `unscrew_lid` are utilised. The service definitions can be found in this [gripperControl.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/gripperControl.py) node. 
+In this step, the custom services `open_gripper`, `close_gripper` and `unscrew_lid` are utilised. The service definitions can be found in this [gripperControl.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/gripperControl.py) node.
+
+![MarkView](https://github.com/am2512/baxter_final_project/blob/master/images/opening_bottle.gif)
 
 **6. Retract and move to drop cap on table:**
 
@@ -64,11 +66,15 @@ The arm moves to the AR tag on the lid, aligns itself and grips the lid.
 
 **10. Move to saved pose of bottle:**
 
-The location of the bottle was saved in Step 4. The left arm now moves back to the bottle using this saved pose and orientation data. 
+The location of the bottle was saved in Step 4. The left arm now moes back to the bottle using this saved pose and orientation data. 
+
+![MarkView](https://github.com/am2512/baxter_final_project/blob/master/images/move_bottle.gif)
 
 **11. Untwist wrist (CCW) and screw in lid (CW):**
 
-The `unscrew_lid` and `screw_lid` services are called during this step.
+The `unscrew_lid` and `screw_lid` services are called during this step. The left arm closes the Tide bottle.
+
+![MarkView](https://github.com/am2512/baxter_final_project/blob/master/images/close_lid.gif)
 
 **12. Retract and go to home position:**
 
