@@ -42,7 +42,7 @@ This is the initial stage in the sequence of events. Baxter is enabled, grippers
 
 **2. Go to home position:**
 
-The left arm moves to position that gives the left hand camera a clear view of the table. For moving the arm, we referred to thi [IK Service](http://sdk.rethinkrobotics.com/wiki/IK_Service_-_Code_Walkthrough) example.
+The left arm moves to position that gives the left hand camera a clear view of the table. For moving the arm, we referred to this [IK Service](http://sdk.rethinkrobotics.com/wiki/IK_Service_-_Code_Walkthrough) example.
  
 **3. Locate AR tag:**
 
@@ -99,6 +99,10 @@ Task = Complete!
 ## Additional ROS packages required
 
 **ar_track_alvar** - a ROS wrapper for Alvar, an open-source AR-tag-tracking library.
+
+## Conclusion
+
+We were able to implement our goal of making Baxter open and close the lid of a Tide bottle. The final video of our demo can be found [here](https://vimeo.com/246549829).
 
 
 
