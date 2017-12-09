@@ -26,7 +26,19 @@ To visualize Baxter and the AR tag in rviz to monitor what Baxter is seeing, run
 
 The package operates similarly to a state machine. Upon completion of each task, the next one is called using a service. The full sequence of steps is controlled through a master node ([sequencer.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/sequencer.py)).
 
-Key steps:
+<h4>Nodes:</h4>
+
+1. [_init_baxter.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/_init_baxter.py)
+2. [gripperControl.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/gripperControl.py)
+3. [motionControl.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/motionControl.py)
+4. [relayObjPose.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/relayObjPose.py)
+5. [sequencer.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/sequencer.py)
+
+<h4>Services</h4>
+
+
+
+<h4>Key steps:</h4>
 
 **1. Initialize Baxter:**
 
@@ -89,5 +101,6 @@ Task = Complete!
 ## Additional ROS packages required
 
 **ar_track_alvar** - a ROS wrapper for Alvar, an open-source AR-tag-tracking library.
+
 
 
