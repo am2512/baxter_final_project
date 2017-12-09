@@ -20,7 +20,7 @@ To visualize Baxter and the AR tag in rviz to monitor what Baxter is seeing, run
 
 ## State machine: nodes, services, and their functionality
 
-The package operates similarly to a state machine. Upon completion of each task, the next one is called using a service. The full sequence of steps is controlled through a master node ([sequencer.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/sequencer.py) node.)
+The package operates similarly to a state machine. Upon completion of each task, the next one is called using a service. The full sequence of steps is controlled through a master node ([sequencer.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/sequencer.py)).
 
 Key steps:
 
@@ -38,7 +38,7 @@ This step uses the `ar_track_alvar` ROS wrapper, to detect AR tags that are fixe
 
 **4. Move to AR tag and prepare to grip:** 
 
-This is done using the pose and orientation data that the AR tag provides. We used the Inverse Kinematics Solver Service to obtain the joint angles for a given pose and orientation. The service definitions can be found in this [motionControl.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/motionControl.py) node.
+This is done using the pose and orientation data that the AR tag provides. We used the Inverse Kinematics Solver Service to obtain the joint angles for a given pose and orientation. The service definitions that carry out these functions can be found in this [motionControl.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/motionControl.py) node.
 
 The AR tag data at this time is copied and saved so that it can be used later to return to the bottle.
 
