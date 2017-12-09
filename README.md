@@ -8,7 +8,7 @@ Our goal was to get Baxter to open and close the lid of a Tide bottle.
 
 ## Overview of project
 
-This package (package name: me495_baxter_jar) allows Baxter to open and close a Tide bottle, using his left arm.
+This package (package name: `me495_baxter_jar`) allows Baxter to open and close a Tide bottle, using his left arm.
 
 ![MarkView](https://github.com/am2512/baxter_final_project/blob/master/images/demo1.png)
 
