@@ -2,6 +2,10 @@
 *Group 1: Ahalya, Wanning, Bill, Ola, Mike*
 
 
+## Project goal
+
+Our goal was to get Baxter to open and close the lid of a Tide bottle. 
+
 ## Overview of project
 
 This package (package name: me495_baxter_jar) allows Baxter to open and close a Tide bottle, using his left arm.
@@ -10,7 +14,7 @@ This package (package name: me495_baxter_jar) allows Baxter to open and close a 
 
 ## How to run the files
 
-A closed Tide bottle with an AR tag on the cap needs to be firmly attached (duct tape will suffice) to a table well within Baxter's reachable area. Once communication with Baxter is established run command:
+A closed Tide bottle with an AR tag on the cap needs to be firmly attached (duct tape will suffice) to a table well within Baxter's reachable area. Once communication with Baxter is established, run this command:
 
 `roslaunch me495_baxter_jar startup.launch`
 
@@ -84,6 +88,6 @@ Task = Complete!
 
 ## Additional ROS packages required
 
-**ar_track_alvar** - a ROS wrapper for Alvar, an open-source AR-tag-tracking library.s
+**ar_track_alvar** - a ROS wrapper for Alvar, an open-source AR-tag-tracking library.
 
 
