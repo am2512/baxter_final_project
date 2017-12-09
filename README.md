@@ -10,7 +10,7 @@ Our goal was to get Baxter to open and close the lid of a Tide bottle.
 
 This package (package name: `me495_baxter_jar`) allows Baxter to open and close a Tide bottle, using his left arm.
 
-![MarkView](https://github.com/am2512/baxter_final_project/blob/master/images/demo1.png) ![MarkView](https://github.com/am2512/baxter_final_project/blob/master/images/baxter_pic.jpg)
+![MarkView](https://github.com/am2512/baxter_final_project/blob/master/images/demo1.png) 
 
 ## How to run the files
 
@@ -42,7 +42,7 @@ This is the initial stage in the sequence of events. Baxter is enabled, grippers
 
 **2. Go to home position:**
 
-The left arm moves to position that gives the left hand camera a clear view of the table. For moving the arm, we referred to the [IK Service](http://sdk.rethinkrobotics.com/wiki/IK_Service_-_Code_Walkthrough).
+The left arm moves to position that gives the left hand camera a clear view of the table. For moving the arm, we referred to thi [IK Service](http://sdk.rethinkrobotics.com/wiki/IK_Service_-_Code_Walkthrough) example.
  
 **3. Locate AR tag:**
 
@@ -52,31 +52,27 @@ Explanation: The function [cd_register_obj_pose](https://github.com/am2512/baxte
 
 **4. Move to AR tag and prepare to grip:** 
 
-This is done using the pose and orientation data that the AR tag provides. We used the Inverse Kinematics Solver Service to obtain the joint angles for a given pose and orientation. We imported `quaternion_from_euler` and `quaternion_multiply` from `tf.transformations`, and used these functions along with the quaternion values of the AR tag to make sure that the gripper was aligned directly above the lid. The service definitions that carry out these functions can be found in this [motionControl.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/motionControl.py) node.
+This is done using the pose and orientation data that the AR tag provides. We used the Inverse Kinematics Solver Service in our node to obtain the joint angles for a given pose and orientation. We imported `quaternion_from_euler` and `quaternion_multiply` from `tf.transformations`, and used these functions along with the quaternion values of the AR tag to make sure that the gripper was aligned directly above the lid. The service definitions that carry out these functions can be found in this [motionControl.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/motionControl.py) node.
 
-Explanation: [cb_set_tag_position](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/motionControl.py#L50-L56) is used to catch new pose value of the AR tag. [cb_set_left_ee_position](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/motionControl.py#L59-L67) is useful for offset moves based on current position. [svc_move_to_AR_tag](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/motionControl.py#L81-L143) is the service controlling the arm to move to AR tag position. [svc_store_bottle_pose](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/motionControl.py#L146-L167) is the service to store the bottle position, which is useful when close the lid. [svc_move_to bottle](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/motionControl.py#L170-L222) move lid back to battle, and the arm is ready to close the lid. [svc_move_to_offset](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/motionControl.py#L226-L307) helps to adjust the position of the end effector.
-
-The AR tag data at this time is copied and saved so that it can be used later to return to the bottle.
+Explanation: [cb_set_tag_position](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/motionControl.py#L50-L56) is used to obtain the new pose value of the AR tag. [cb_set_left_ee_position](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/motionControl.py#L59-L67) is useful for offset moves based on current position. [svc_move_to_AR_tag](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/motionControl.py#L81-L143) is the service controlling the arm to move to AR tag position. [svc_store_bottle_pose](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/motionControl.py#L146-L167) is the service to store the bottle position, which is useful when the lid needs to be closed. The AR tag data at this time is copied and saved so that it can be used later to return to the bottle. [svc_move_to bottle](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/motionControl.py#L170-L222) moves lid back to the bottle, and then arm is ready to close the lid. [svc_move_to_offset](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/motionControl.py#L226-L307) helps to adjust the position of the end effector.
 
 **5. Untwist wrist (CW) and unscrew lid (CCW):**
 
-In this step, the custom services `open_gripper`, `close_gripper` and `unscrew_lid` are utilised. The service definitions can be found in this [gripperControl.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/gripperControl.py) node. 
-
-Explanation: [srv_open_grip](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/gripperControl.py#L31-L35) to open the gripper. [srv_close_grip](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/gripperControl.py#L38-L42) to close the gripper. [srv_opening_sequence](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/gripperControl.py#L45-L63) to unscrew the lid. [srv_closing_sequence](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/gripperControl.py#L66-L86) to screw the lid.
+In this step, the following custom services are used: [srv_open_grip](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/gripperControl.py#L31-L35) is used to open the gripper. [srv_close_grip](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/gripperControl.py#L38-L42) is used to close the gripper. [srv_opening_sequence](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/gripperControl.py#L45-L63) is used unscrew the lid. Lastly, [srv_closing_sequence](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/gripperControl.py#L66-L86) is used to screw the lid. The service definitions can be found in this [gripperControl.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/gripperControl.py) node.
 
 ![MarkView](https://github.com/am2512/baxter_final_project/blob/master/images/opening_lid.gif)
 
 **6. Retract and move to drop cap on table:**
 
-The left arm moves up and then opens its gripper to drop the cap beside the bottle.
+The left arm moves up, moves to the side of the bottle, moves down and then opens its gripper to drop the cap beside the bottle.
 
 **7. Go to home position:**
 
-The left arm goes back to the home position and waits for an updated position of the lid.
+The left arm goes back to the home position and waits for an updated position of the lid. At this point, the lid can be shifted around. Baxter will identify the new position of the lid.
 
 **8. Locate AR tag:**
 
-The AR tag is located and the pose and orientation are relayed to the IK Solver Service. 
+The AR tag of the lid is located and the pose and orientation of the lid are obtained, using the[relayObjPose.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/relayObjPose.py) node. 
 
 **9. Move to AR tag and prepare to grip:**
 
@@ -84,13 +80,13 @@ The arm moves to the AR tag on the lid, aligns itself and grips the lid.
 
 **10. Move to saved pose of bottle:**
 
-The location of the bottle was saved in Step 4. The left arm now moves back to the bottle using this saved pose and orientation data. 
+The location of the bottle was saved in Step 4, when this service was called: [svc_store_bottle_pose](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/motionControl.py#L146-L167). The left arm now moves back to the bottle using this saved pose and orientation data. 
 
 ![MarkView](https://github.com/am2512/baxter_final_project/blob/master/images/move_to_bottle.gif)
 
 **11. Untwist wrist (CCW) and screw in lid (CW):**
 
-The `unscrew_lid` and `screw_lid` services are called during this step.
+The [srv_open_grip](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/gripperControl.py#L31-L35) and [srv_close_grip](https://github.com/am2512/baxter_final_project/blob/e5a648deb35b5c857654af809f4dbe646fdc7b7d/scripts/gripperControl.py#L38-L42) services are called during this step.
 
 ![MarkView](https://github.com/am2512/baxter_final_project/blob/master/images/close_lid.gif)
 
