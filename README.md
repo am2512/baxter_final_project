@@ -72,7 +72,7 @@ The left arm goes back to the home position and waits for an updated position of
 
 **8. Locate AR tag:**
 
-The AR tag of the lid is located and the pose and orientation of the lid are obtained, using the[relayObjPose.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/relayObjPose.py) node. 
+The AR tag of the lid is located and the pose and orientation of the lid are obtained, using the [relayObjPose.py](https://github.com/am2512/baxter_final_project/blob/master/scripts/relayObjPose.py) node. 
 
 **9. Move to AR tag and prepare to grip:**
 
